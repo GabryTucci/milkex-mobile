@@ -64,6 +64,26 @@ const ICON_PATHS = {
   home: "M3 11 12 3l9 8M5 9.5V21h5v-6h4v6h5V9.5",
   link: "M10 13.5a4.2 4.2 0 0 0 6 0l3.2-3.2a4.2 4.2 0 0 0-6-6l-1.4 1.4M14 10.5a4.2 4.2 0 0 0-6 0l-3.2 3.2a4.2 4.2 0 0 0 6 6l1.4-1.4",
   topdf: "M5 12h14M13 6l6 6-6 6",
+  trash: "M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6",
+  edit: "M16.5 3.5l4 4L8 20H4v-4z",
+  folder: "M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2h8.5A1.5 1.5 0 0 1 21 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5z",
+  warn: "M12 3.5 2.5 20h19zM12 10v4.5M12 17.2v.1",
+  printer: "M6 9V3h12v6M6 18H4v-7h16v7h-2M6 14h12v7H6z",
+  user: "M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10z",
+  users: "M16 21a6 6 0 0 0-12 0M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM21 21a5 5 0 0 0-3.5-4.8M15 3.2a4 4 0 0 1 0 7.6",
+  cloud: "M7 19a5 5 0 1 1 .9-9.9A6.5 6.5 0 0 1 20 11a4 4 0 0 1-1.5 8z",
+  tag: "M3 3h8l10 10-8 8L3 11zM7.5 7.5v.1",
+  bolt: "M13 2 4 14h7l-1 8 9-12h-7z",
+  eraser: "M7 21h13M4.5 14.5l9-9 6 6-9 9h-3z",
+  phone: "M7 2h10a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM11 18.5h2",
+  bug: "M9 6.5a3 3 0 0 1 6 0M7 10h10v5a5 5 0 0 1-10 0zM12 10v10M3 13h4M17 13h4M4.5 7.5 7 9.5M19.5 7.5 17 9.5M4.5 19.5 7 17.5M19.5 19.5 17 17.5",
+  bulb: "M9 18h6M10 21h4M12 3a6 6 0 0 0-3.8 10.6c.7.6.8 1.4.8 2.4h6c0-1 .1-1.8.8-2.4A6 6 0 0 0 12 3z",
+  star: "M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z",
+  info: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 11v5M12 8v.1",
+  alert: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7.5V13M12 16.2v.1",
+  xcircle: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM9 9l6 6M15 9l-6 6",
+  okcircle: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8 12.5l2.7 2.7L16 9.8",
+  sparkle: "M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6",
 };
 function ic(name, cls = "") {
   if (name.startsWith("f_")) return `<svg class="ic ${cls}" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd" aria-hidden="true"><path d="${ICON_PATHS[name] || ""}"/></svg>`;
@@ -75,3 +95,6 @@ function ic(name, cls = "") {
 function applyIcons(root = document) {
   root.querySelectorAll("[data-ic]").forEach(el => { el.outerHTML = ic(el.dataset.ic); });
 }
+
+// icona come elemento DOM (per h(...)): <svg class="ic">
+function icn(name, cls = "") { const t = document.createElement("template"); t.innerHTML = ic(name, cls); return t.content.firstChild; }

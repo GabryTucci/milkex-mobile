@@ -295,3 +295,54 @@ html.nav-cover{background:#150f21}
 .offst{margin-top:1.1rem;font-size:.85rem;color:#8f84a8;display:flex;align-items:center;justify-content:center;gap:.5rem}
 .offst i{width:.6rem;height:.6rem;border-radius:50%;background:#f0884a;animation:offBreath 1.2s ease-in-out infinite}
 .offst.ok{color:#7fd89a;font-weight:600}
+
+/* ======================================================================
+   Rifinitura grafica (unslop): superfici piene invece di sfumature e aloni,
+   niente movimenti in loop senza motivo, pesi 400–600, niente maiuscolo spaziato.
+   Il colore pieno resta per il logo e per i contenuti (il PDF).
+   ====================================================================== */
+:root{--ease:cubic-bezier(.2,.8,.2,1);--night:#1b1526}
+.logo{font-weight:600}
+[data-chatbadge]{background:var(--accent);font-weight:600}
+.toast{background:#221a33;color:#efeaf8;border-radius:8px;padding:8px 16px;box-shadow:0 6px 20px rgba(20,10,35,.25)}
+.modal h3{font-weight:600}
+
+/* avvio: fondo notte pieno, la μ entra e il disegno si completa; niente respiro e niente alone in loop */
+#splash,#navfx{background:var(--night)}
+html.nav-cover{background:var(--night)}
+#splash .sp-logo{animation:none!important}
+#splash .sp-drop::before{display:none}
+.sp-name{font-weight:600;letter-spacing:.02em}
+.sp-sub{text-transform:none;letter-spacing:.02em;font-size:13px}
+.sp-msg{color:#c9bfdc}
+
+/* barra di navigazione: accento pieno, nessun bagliore */
+#navbar{background:var(--accent);box-shadow:none}
+
+/* barre di avanzamento: un solo colore */
+.mntrack i,.lbbar i{background:var(--accent)}
+
+/* correttore: livello in minuscolo */
+.fixlv{text-transform:none;letter-spacing:0;font-weight:600}
+.lbu.ok .lbst{font-weight:600}
+
+/* MILKeX non raggiungibile */
+#offline{background:rgba(27,21,38,.98)}
+.offcard .offlogo{animation:none}
+.offcard h2{font-weight:600}
+.offbtn{border-radius:10px;font-weight:600;background:var(--accent);box-shadow:none;padding:12px 28px;transition:background-color .15s var(--ease),transform .1s var(--ease)}
+.offbtn:hover{background:var(--accent-hover)}
+.offst.ok{font-weight:500}
+
+/* menu: colonna di icone allineata */
+.menu{padding:4px}
+.menu .mi{display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:6px;transition:background-color .12s var(--ease)}
+.menu .mic{width:16px;height:16px;flex:none;display:grid;place-items:center;color:var(--muted)}
+.menu .mic .ic{width:16px;height:16px}
+.menu .mi:hover .mic{color:var(--text)}
+.ipad .menu .mi{padding:10px 14px}
+.closelist li .ci{display:grid;place-items:center;color:var(--muted)}
+.closelist li .ci .ic{width:18px;height:18px}
+.fbk b{display:flex;align-items:center;gap:6px;font-weight:600}
+.fbk b .ic{width:16px;height:16px;color:var(--muted)}
+.fbk.on b .ic{color:var(--accent)}
