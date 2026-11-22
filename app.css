@@ -157,3 +157,13 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;-webki
 .empty .ic{width:3rem;height:3rem;color:rgba(255,184,137,.6);margin-bottom:.6rem}
 .offline{display:flex;align-items:center;gap:.5rem;justify-content:center;font-size:.82rem;color:var(--peach);background:rgba(255,184,137,.1);
   padding:.4rem;border-radius:1rem;margin-bottom:.8rem}
+
+/* link del PDF (indice, riferimenti) */
+.lnk{position:absolute;display:block;border-radius:3px;z-index:2;-webkit-tap-highlight-color:transparent}
+.lnk:active{background:rgba(240,136,74,.28)}
+.pg.hit{animation:hit 1s ease}
+@keyframes hit{0%{box-shadow:0 0 0 0 rgba(240,136,74,.9),0 6px 22px rgba(0,0,0,.4)}100%{box-shadow:0 0 0 14px rgba(240,136,74,0),0 6px 22px rgba(0,0,0,.4)}}
+.dock button{padding:.65rem .85rem}
+.outline{display:flex;flex-direction:column;gap:.2rem;margin-top:.4rem}
+.oitem{text-align:left;padding:.65rem .9rem;border-radius:.8rem;background:var(--glass);font-size:.95rem;line-height:1.3}
+.oitem:active{background:var(--glass2)}

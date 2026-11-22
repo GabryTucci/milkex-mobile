@@ -1,6 +1,6 @@
 {
  "name": "MILKeX Mobile",
- "short_name": "MILKeX",
+ "short_name": "MILKeX Mobile",
  "description": "I PDF dei tuoi progetti LaTeX, anche a computer spento",
  "start_url": "./",
  "scope": "./",

@@ -155,7 +155,7 @@ function welcomeScreen(err) {
   } }, "Collega");
   return h("div", { class: "screen" }, h("div", { class: "welcome" },
     logo("big"),
-    h("h2", { html: 'MIL<span style="color:#ffb889">K</span><span style="color:#c4a8ff">e</span>X' }),
+    h("h2", { html: 'MIL<span class="lxk">K</span><span class="lxe">e</span>X' }),
     h("div", { class: "sub" }, "Mobile"),
     h("div", { class: "steps" },
       h("div", { class: "step", style: "animation-delay:.25s" }, h("i", {}, "1"), h("div", {}, "Sul computer apri MILKeX e, nella barra a sinistra, scegli ", h("b", {}, "Telefono e tablet"), ".")),
@@ -220,6 +220,7 @@ function viewerScreen(p) {
     h("div", { class: "bar" }, h("button", { class: "round", "aria-label": "Indietro", onclick: () => history.back() }, icon("home")), title, dl),
     view, num,
     h("div", { class: "dock" },
+      h("button", { onclick: () => scr.toc() }, icon("list"), "Indice"),
       h("button", { onclick: () => go(() => filesScreen(p)) }, icon("code"), "Modifica"),
       h("button", { class: "main", onclick: () => compile(p, scr) }, icon("recompile"), "Compila")));
   scr.reload = async (fresh = true) => {
@@ -264,7 +265,64 @@ function viewerScreen(p) {
     const c = h("canvas", { width: Math.floor(vp.width), height: Math.floor(vp.height) });
     await page.render({ canvasContext: c.getContext("2d"), viewport: vp }).promise;
     d.replaceChildren(c);
+    try {
+      const vl = page.getViewport({ scale: w / v1.width });
+      for (const a of await page.getAnnotations({ intent: "display" })) {
+        if (a.subtype !== "Link" || !(a.dest || a.url)) continue;
+        const [x1, y1, x2, y2] = vl.convertToViewportRectangle(a.rect);
+        const el = h("a", { class: "lnk", style: `left:${Math.min(x1, x2)}px;top:${Math.min(y1, y2)}px;width:${Math.abs(x2 - x1)}px;height:${Math.abs(y2 - y1)}px` });
+        if (a.url) Object.assign(el, { href: a.url, target: "_blank", rel: "noopener" });
+        else el.onclick = e => { e.preventDefault(); jump(a.dest); };
+        d.append(el);
+      }
+    } catch { }
   }
+  // salta a una destinazione del PDF (voce dell'indice, riferimento…)
+  async function jump(dest) {
+    try {
+      if (typeof dest === "string") dest = await doc.getDestination(dest);
+      if (!Array.isArray(dest)) return;
+      const idx = typeof dest[0] === "object" ? await doc.getPageIndex(dest[0]) : dest[0];
+      const pg = pages.querySelector(`.pg[data-n="${idx + 1}"]`); if (!pg) return;
+      let off = 0;
+      if (dest[1]?.name === "XYZ" && dest[3] != null) {
+        const page = await doc.getPage(idx + 1), v1 = page.getViewport({ scale: 1 });
+        off = Math.max(0, page.getViewport({ scale: parseFloat(pg.style.width) / v1.width }).convertToViewportPoint(0, dest[3])[1] - 16);
+      }
+      view.scrollTo({ top: pg.offsetTop + off - 8, behavior: "smooth" });
+      pg.classList.remove("hit"); void pg.offsetWidth; pg.classList.add("hit");
+    } catch { }
+  }
+  // pagina dell'indice: cerca il titolo "Indice" / "Contents" nelle prime pagine
+  let tocPage = null;
+  async function goToc() {
+    if (!doc) return toast("Il PDF non è ancora aperto");
+    if (tocPage == null) {
+      tocPage = 0;
+      const RX = /^(indice( generale)?|sommario|contents|table of contents|inhaltsverzeichnis|table des matières|índice)$/i;
+      for (let i = 1; i <= Math.min(doc.numPages, 20) && !tocPage; i++) {
+        const tc = await (await doc.getPage(i)).getTextContent();
+        const lines = {};
+        tc.items.forEach(it => { const y = Math.round(it.transform[5]); lines[y] = (lines[y] || "") + it.str; });
+        if (Object.values(lines).some(l => RX.test(l.replace(/\s+/g, " ").trim()))) tocPage = i;
+      }
+    }
+    if (tocPage) return jump([tocPage - 1, { name: "Fit" }]);
+    // nessun indice stampato: segnalibri del PDF, se ci sono
+    const out = await doc.getOutline();
+    if (!out?.length) return toast("Questo PDF non ha un indice");
+    outlineSheet(out);
+  }
+  function outlineSheet(out) {
+    const box = h("div", { class: "outline" });
+    const add = (items, lvl) => items.forEach(o => { box.append(h("button", { class: "oitem", style: `padding-left:${0.9 + lvl * 1.1}rem`, onclick: () => { close(); jump(o.dest); } }, o.title)); if (lvl < 1) add(o.items || [], lvl + 1); });
+    add(out, 0);
+    const back = h("div", { class: "sheet-back" }), sh = h("div", { class: "sheet" }, h("div", { class: "grab" }), h("h3", {}, "Indice"), box);
+    const close = () => { sh.classList.add("out"); back.classList.add("out"); setTimeout(() => { sh.remove(); back.remove(); }, 280); };
+    back.onclick = close;
+    document.body.append(back, sh);
+  }
+  scr.toc = goToc;
   // numero di pagina mentre si scorre
   view.addEventListener("scroll", () => {
     if (!doc) return;

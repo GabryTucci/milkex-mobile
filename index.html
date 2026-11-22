@@ -6,13 +6,13 @@
 <meta name="theme-color" content="#221a33">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="MILKeX">
+<meta name="apple-mobile-web-app-title" content="MILKeX Mobile">
 <title>MILKeX Mobile</title>
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="favicon.png">
 <script>
 // in locale (anteprima dentro MILKeX) i file condivisi stanno nella cartella principale; su GitHub Pages accanto all'app
 window.ROOT = location.pathname.startsWith("/mobile/") ? "/" : "./";
-document.write('<link rel="stylesheet" href="' + ROOT + 'common.css"><link rel="apple-touch-icon" href="' + ROOT + 'icon-180.png"><link rel="icon" href="' + ROOT + 'favicon.png">');
+document.write('<link rel="stylesheet" href="' + ROOT + 'common.css">');
 </script>
 <link rel="stylesheet" href="app.css">
 </head>
