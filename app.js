@@ -3,6 +3,12 @@
 "use strict";
 const GH = "https://api.github.com";
 const PDF_BRANCH = "milkex-pdf";
+// progetti personali: tutti nel repository unico milkex-progetti, un ramo per progetto (p/<nome>, PDF in pdf/<nome>)
+const HUB_NAME = "milkex-progetti";
+const pdfRef = p => p.pdfRef || PDF_BRANCH;
+// ramo con la barra (p/<nome>): per l'albero dei file serve il commit
+const treeRef = async p => p.hub ? (await gh(`/repos/${p.full}/branches/${p.branch}`)).commit.sha : p.branch;
+const pk = p => p.hub ? p.full + "@" + p.branch : p.full;   // chiave del progetto (nel repository unico non basta il nome)
 const WF = "milkex.yml";
 const TEXT = /\.(tex|bib|sty|cls|txt|md|bst|def|cfg)$/i;
 pdfjsLib.GlobalWorkerOptions.workerSrc = ROOT + "vendor/pdfjs/pdf.worker.min.js";
@@ -74,6 +80,17 @@ async function loadMe() {
   store.set("me", { login: me.login, name: me.name || me.login, avatar: me.avatar_url });
   return me;
 }
+// PDF appena compilati da qui: GitHub può restituire per un po' le informazioni vecchie, quindi si ricordano
+function rememberPdf(full, info) { const f = store.get("fresh") || {}; f[full] = info; store.set("fresh", f); }
+function withFresh(p) {
+  const f = (store.get("fresh") || {})[pk(p)];
+  return f && (!p.info || (f.compiledAt || 0) > (p.info.compiledAt || 0)) ? { ...p, info: f } : p;
+}
+const when = t => {
+  if (!t) return "";
+  const d = new Date(t * 1000);
+  return d.toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" }) + " alle " + d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+};
 async function listProjects() {
   let repos = [];
   for (let p = 1; p < 6; p++) {
@@ -81,17 +98,39 @@ async function listProjects() {
     repos = repos.concat(page); if (page.length < 100) break;
   }
   repos = repos.filter(r => !/^milkex(-mobile|-simulazioni)?$/i.test(r.name));
+  const me = store.get("me") || {};
+  const hubs = repos.filter(r => r.name.toLowerCase() === HUB_NAME && r.owner.login === me.login);
+  repos = repos.filter(r => !hubs.includes(r));
   // un progetto ha il PDF se esiste il ramo milkex-pdf: lo leggiamo (piccolo milkex.json)
   const out = await Promise.all(repos.map(async r => {
     let info = null;
     try {
-      const res = await gh(`/repos/${r.full_name}/contents/milkex.json?ref=${PDF_BRANCH}`, { accept: "application/vnd.github.raw", raw: true });
+      const res = await gh(`/repos/${r.full_name}/contents/milkex.json?ref=${encodeURIComponent(pdfRef(p))}`, { accept: "application/vnd.github.raw", raw: true });
       if (res.ok) info = await res.json();
     } catch { }
     return { full: r.full_name, name: r.name, owner: r.owner.login, branch: r.default_branch, pushed: r.pushed_at, latex: isLatex(r) || !!info, info,
       perm: r.permissions || {} };
   }));
-  const list = out.filter(p => p.latex);
+  // repository unico: ogni ramo p/<nome> è un progetto
+  for (const r of hubs) {
+    let brs = [];
+    for (let pg = 1; pg < 6; pg++) {
+      const page = await gh(`/repos/${r.full_name}/branches?per_page=100&page=${pg}`);
+      brs = brs.concat(page); if (page.length < 100) break;
+    }
+    const names = new Set(brs.map(b => b.name));
+    out.push(...await Promise.all(brs.filter(b => b.name.startsWith("p/")).map(async b => {
+      const slug = b.name.slice(2), ref = "pdf/" + slug;
+      let info = null;
+      if (names.has(ref)) try {
+        const res = await gh(`/repos/${r.full_name}/contents/milkex.json?ref=${encodeURIComponent(ref)}`, { accept: "application/vnd.github.raw", raw: true });
+        if (res.ok) info = await res.json();
+      } catch { }
+      return { full: r.full_name, name: info?.name || slug.replace(/-[0-9a-f]{6}$/, ""), owner: r.owner.login, branch: b.name, defBranch: r.default_branch,
+        pdfRef: ref, hub: true, pushed: r.pushed_at, latex: true, info, perm: r.permissions || {} };
+    })));
+  }
+  const list = out.filter(p => p.latex).map(withFresh);
   store.set("projects", list);
   return list;
 }
@@ -99,18 +138,18 @@ async function listProjects() {
 // cache dei PDF per la consultazione senza rete
 async function pdfCache() { try { return await caches.open("milkex-pdf"); } catch { return null; } }
 async function getPdf(p, fresh) {
-  const key = new Request(location.origin + "/__pdf/" + p.full + "/" + encodeURIComponent(p.info.pdf));
+  const key = new Request(location.origin + "/__pdf/" + pk(p) + "/" + encodeURIComponent(p.info.pdf));
   const c = await pdfCache();
   const info = p.info;
-  const saved = store.get("pdfAt:" + p.full + "/" + p.info.pdf);
+  const saved = store.get("pdfAt:" + pk(p) + "/" + p.info.pdf);
   if (c && !fresh && saved && info && saved >= info.compiledAt) {
     const hit = await c.match(key); if (hit) return { data: await hit.arrayBuffer(), cached: true };
   }
   try {
-    const r = await gh(`/repos/${p.full}/contents/${enc(info.pdf)}?ref=${PDF_BRANCH}`, { accept: "application/vnd.github.raw", raw: true });
+    const r = await gh(`/repos/${p.full}/contents/${enc(info.pdf)}?ref=${encodeURIComponent(pdfRef(p))}`, { accept: "application/vnd.github.raw", raw: true });
     if (!r.ok) throw new Error("PDF non trovato (" + r.status + ")");
     const data = await r.arrayBuffer();
-    if (c) { await c.put(key, new Response(data.slice(0), { headers: { "Content-Type": "application/pdf" } })); store.set("pdfAt:" + p.full + "/" + p.info.pdf, info.compiledAt); }
+    if (c) { await c.put(key, new Response(data.slice(0), { headers: { "Content-Type": "application/pdf" } })); store.set("pdfAt:" + pk(p) + "/" + p.info.pdf, info.compiledAt); }
     return { data };
   } catch (e) {
     const hit = c && await c.match(key);
@@ -169,7 +208,7 @@ function homeScreen() {
   const me = store.get("me") || {};
   const list = h("div", {}), q = h("input", { type: "search", placeholder: "Cerca un progetto", oninput: () => draw() });
   const refreshBtn = h("button", { class: "round", "aria-label": "Aggiorna", onclick: () => load(true) }, icon("sync"));
-  let projects = store.get("projects") || [], offline = false;
+  let projects = (store.get("projects") || []).map(withFresh), offline = false;
   const draw = () => {
     const f = q.value.trim().toLowerCase();
     const items = projects.filter(p => !f || p.name.toLowerCase().includes(f) || p.owner.toLowerCase().includes(f));
@@ -228,7 +267,7 @@ function viewerScreen(p) {
       sum ? null : h("button", { onclick: () => go(() => filesScreen(p)) }, icon("code"), "Modifica"),
       sum ? null : h("button", { class: "main", onclick: () => compile(p, scr) }, icon("recompile"), "Compila")));
   scr.reload = async (fresh = true) => {
-    title.lastChild.textContent = p.info ? "PDF " + ago(p.info.compiledAt) + (p.info.by ? " · " + p.info.by : "") : "nessun PDF";
+    title.lastChild.textContent = p.info ? "Compilato " + when(p.info.compiledAt) + " · " + (p.info.source === "github" ? "su GitHub" : "dal PC") : "nessun PDF";
     if (!p.info) {
       pages.replaceChildren(h("div", { class: "empty", style: "padding-top:4rem;max-width:22rem" }, logo("big"), h("p", {},
         "Questo progetto non ha ancora un PDF su GitHub. Premi ", h("b", {}, "Compila"), ": GitHub lo crea in un paio di minuti, senza il computer.")));
@@ -377,18 +416,29 @@ async function ensureWorkflow(p) {
   const want = await (await fetch("milkex.yml", { cache: "no-store" })).text();
   let cur = null;
   try { cur = await gh(`/repos/${p.full}/contents/${WF_PATH}?ref=${p.branch}`); } catch (e) { if (e.status !== 404) throw e; }
-  if (cur && utf8b64(cur.content) === want) return false;
+  if (cur && utf8b64(cur.content) === want && !p.hub) return false;
+  if (cur && utf8b64(cur.content) === want) {   // repository unico: controlla anche il ramo principale
+    let d = null;
+    try { d = await gh(`/repos/${p.full}/contents/${WF_PATH}?ref=${encodeURIComponent(p.defBranch)}`); } catch (e) { if (e.status !== 404) throw e; }
+    if (d && utf8b64(d.content) === want) return false;
+  }
   if (!cur) {
     const ok = await sheet("Compilare su GitHub?", "La prima volta aggiungo al progetto un piccolo file (.github/workflows/milkex.yml) che dice a GitHub come compilarlo. Le compilazioni sono gratuite (fino a circa 2000 minuti al mese).",
       [{ label: "Aggiungi e compila", value: true }, { label: "Annulla", ghost: true }]);
     if (!ok) return null;
   }
   await gh(`/repos/${p.full}/contents/${WF_PATH}`, { method: "PUT", body: { message: "MILKeX Mobile: compilazione su GitHub", content: b64utf8(want), branch: p.branch, ...(cur ? { sha: cur.sha } : {}) } });
+  if (p.hub && p.defBranch && p.defBranch !== p.branch) {
+    let d = null;
+    try { d = await gh(`/repos/${p.full}/contents/${WF_PATH}?ref=${encodeURIComponent(p.defBranch)}`); } catch (e) { if (e.status !== 404) throw e; }
+    if (!d || utf8b64(d.content) !== want)
+      await gh(`/repos/${p.full}/contents/${WF_PATH}`, { method: "PUT", body: { message: "MILKeX Mobile: compilazione su GitHub", content: b64utf8(want), branch: p.defBranch, ...(d ? { sha: d.sha } : {}) } });
+  }
   return true;
 }
 async function findMain(p) {
   if (p.info?.main) return p.info.main;
-  const t = await gh(`/repos/${p.full}/git/trees/${p.branch}?recursive=1`);
+  const t = await gh(`/repos/${p.full}/git/trees/${await treeRef(p)}?recursive=1`);
   const tex = t.tree.filter(x => x.type === "blob" && /\.tex$/i.test(x.path)).map(x => x.path).sort((a, b) => a.split("/").length - b.split("/").length);
   for (const f of [...tex.filter(f => /(^|\/)main\.tex$/i.test(f)), ...tex].slice(0, 8)) {
     const c = await gh(`/repos/${p.full}/contents/${enc(f)}?ref=${p.branch}`);
@@ -434,7 +484,7 @@ async function compile(p, scr) {
     let run = null;
     while (true) {
       await new Promise(r => setTimeout(r, 5000));
-      const rs = await gh(`/repos/${p.full}/actions/workflows/${WF}/runs?event=workflow_dispatch&per_page=3`);
+      const rs = await gh(`/repos/${p.full}/actions/workflows/${WF}/runs?event=workflow_dispatch&per_page=5${p.hub ? "&branch=" + encodeURIComponent(p.branch) : ""}`);
       run = rs.workflow_runs.find(r => new Date(r.created_at).getTime() > t0 - 60000) || run;
       if (!run) continue;
       const sec = ((Date.now() - t0) / 1000) | 0;
@@ -443,10 +493,12 @@ async function compile(p, scr) {
       if (Date.now() - t0 > 20 * 60000) throw new Error("la compilazione sta impiegando troppo");
     }
     // nuovo PDF e informazioni
-    const res = await gh(`/repos/${p.full}/contents/milkex.json?ref=${PDF_BRANCH}`, { accept: "application/vnd.github.raw", raw: true });
+    const res = await gh(`/repos/${p.full}/contents/milkex.json?ref=${encodeURIComponent(pdfRef(p))}`, { accept: "application/vnd.github.raw", raw: true });
     const info = res.ok ? await res.json() : null;
     if (info && info.newPdf !== false) {
-      p.info = info; await scr.reload(true);
+      p.info = info; rememberPdf(pk(p), info);
+      store.set("projects", (store.get("projects") || []).map(x => pk(x) === pk(p) ? { ...x, info } : x));
+      await scr.reload(true);
       if (info.ok) st.end("ok", "PDF aggiornato", "Compilato su GitHub " + ago(info.compiledAt));
       else st.end("err", "PDF aggiornato, con errori", "LaTeX ha segnalato degli errori: il PDF potrebbe essere incompleto.", await errorsBox(p));
     } else st.end("err", "Compilazione non riuscita", "Non è stato prodotto un PDF nuovo.", await errorsBox(p));
@@ -457,7 +509,7 @@ async function compile(p, scr) {
 }
 async function errorsBox(p) {
   try {
-    const r = await gh(`/repos/${p.full}/contents/compile.log?ref=${PDF_BRANCH}`, { accept: "application/vnd.github.raw", raw: true });
+    const r = await gh(`/repos/${p.full}/contents/compile.log?ref=${encodeURIComponent(pdfRef(p))}`, { accept: "application/vnd.github.raw", raw: true });
     if (!r.ok) return "";
     const log = await r.text();
     const errs = log.split("\n").filter(l => /^(!|.+:\d+: )/.test(l)).slice(0, 8).join("\n");
@@ -474,7 +526,7 @@ function filesScreen(p) {
     h("div", { class: "scroll" }, h("div", { class: "wrapc" }, list)));
   (async () => {
     try {
-      const t = await gh(`/repos/${p.full}/git/trees/${p.branch}?recursive=1`);
+      const t = await gh(`/repos/${p.full}/git/trees/${await treeRef(p)}?recursive=1`);
       const files = t.tree.filter(x => x.type === "blob" && TEXT.test(x.path) && !x.path.startsWith(".github/"))
         .sort((a, b) => (a.path.split("/").length - b.path.split("/").length) || a.path.localeCompare(b.path));
       const main = p.info?.main;
