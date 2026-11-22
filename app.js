@@ -146,11 +146,11 @@ function sheet(title, text, buttons) {
 
 // ---------- benvenuto: collega il telefono
 function welcomeScreen(err) {
-  const tok = h("input", { class: "field", type: "password", placeholder: "Token di GitHub (ghp_… o gho_…)", autocomplete: "off" });
+  const tok = h("input", { class: "field", type: "password", placeholder: "Collegamento copiato dal computer o token", autocomplete: "off" });
   const msg = h("div", { class: "err" }, err || "");
   const btn = h("button", { class: "cta", onclick: async () => {
     if (!tok.value.trim()) return;
-    btn.disabled = true; store.set("token", tok.value.trim());
+    btn.disabled = true; const v = tok.value.trim(), mm = v.match(/[#&?]t=([^&\s]+)/); store.set("token", mm ? decodeURIComponent(mm[1]) : v);
     try { await loadMe(); start(); } catch (e) { store.set("token", null); msg.textContent = e.message; btn.disabled = false; }
   } }, "Collega");
   return h("div", { class: "screen" }, h("div", { class: "welcome" },
@@ -161,7 +161,7 @@ function welcomeScreen(err) {
       h("div", { class: "step", style: "animation-delay:.25s" }, h("i", {}, "1"), h("div", {}, "Sul computer apri MILKeX e, nella barra a sinistra, scegli ", h("b", {}, "Telefono e tablet"), ".")),
       h("div", { class: "step", style: "animation-delay:.35s" }, h("i", {}, "2"), h("div", {}, "Inquadra il codice QR con la fotocamera di questo dispositivo.")),
       h("div", { class: "step", style: "animation-delay:.45s" }, h("i", {}, "3"), h("div", {}, "Fatto: i PDF dei tuoi progetti sono qui, anche a computer spento. Aggiungi l'app alla schermata Home per averla sempre a portata di mano."))),
-    h("details", { class: "tokbox" }, h("summary", {}, "Oppure collega con un token di GitHub"), tok, msg, btn)));
+    h("details", { class: "tokbox" }, h("summary", {}, "Oppure incolla il collegamento copiato dal computer"), tok, msg, btn)));
 }
 
 // ---------- elenco progetti
@@ -532,7 +532,11 @@ async function start() {
   stack.length = 0; $("#app").replaceChildren(); current = null;
   // collegamento dal codice QR del computer: il token arriva nel frammento (#t=…), che non lascia il dispositivo
   const m = location.hash.match(/[#&]t=([^&]+)/);
-  if (m) { store.set("token", decodeURIComponent(m[1])); history.replaceState(null, "", location.pathname); }
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  if (m) store.set("token", decodeURIComponent(m[1]));
+  // nell'app installata l'indirizzo si pulisce; nel browser resta, per installarla già collegata
+  if (standalone) { if (m) history.replaceState(null, "", location.pathname); }
+  else if (token() && !m) history.replaceState(null, "", location.pathname + "#t=" + encodeURIComponent(token()));
   if (!token()) { stack.push(() => welcomeScreen()); return show(welcomeScreen()); }
   if (!store.get("me") || m) { try { await loadMe(); } catch (e) { if (e.auth || !store.get("me")) { store.set("token", null); return show(welcomeScreen(e.message)); } } }
   stack.push(homeScreen); show(homeScreen()); history.replaceState({ d: 1 }, "");
