@@ -346,3 +346,26 @@ html.nav-cover{background:var(--night)}
 .fbk b{display:flex;align-items:center;gap:6px;font-weight:600}
 .fbk b .ic{width:16px;height:16px;color:var(--muted)}
 .fbk.on b .ic{color:var(--accent)}
+
+/* ======================================================================
+   Profondità: gradienti leggerissimi dentro lo stesso colore (luce dall'alto),
+   così le superfici non sono piatte. Nessun cambio di tinta, nessun alone.
+   ====================================================================== */
+:root{
+  --lift:linear-gradient(170deg,rgba(122,79,208,.055),rgba(122,79,208,0) 55%);
+  --chromefx:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,0) 35%,rgba(0,0,0,.12));
+  --raise:inset 0 1px 0 rgba(255,255,255,.6),0 1px 2px rgba(40,20,70,.06),0 6px 20px rgba(40,20,70,.06);
+}
+:root[data-theme="dark"]{
+  --lift:linear-gradient(170deg,rgba(255,255,255,.05),rgba(255,255,255,0) 45%,rgba(0,0,0,.12));
+  --raise:inset 0 1px 0 rgba(255,255,255,.05),0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.22);
+}
+.chrome{background-image:var(--chromefx)}
+.modal,.menu{background-image:var(--lift)}
+.modal{box-shadow:var(--raise),0 24px 60px rgba(10,5,25,.35)}
+.btn.primary{background-image:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,0) 65%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 1px 2px rgba(20,10,35,.25)}
+.btn:not(.primary){background-image:linear-gradient(180deg,rgba(255,255,255,.04),rgba(0,0,0,.03))}
+#splash,#navfx{background:linear-gradient(180deg,#251d35 0%,#1b1526 45%,#130f1b 100%)}
+#offline{background:linear-gradient(180deg,rgba(37,29,53,.98),rgba(19,15,27,.99))}
+.toast{background-image:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,0))}
