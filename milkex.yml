@@ -51,12 +51,16 @@ jobs:
           [ -f "$D/$N.pdf" ] && cp "$D/$N.pdf" /tmp/out/
           [ -f "$D/$N.log" ] && cp "$D/$N.log" /tmp/out/compile.log
           NEW=1
+          git fetch -q origin milkex-pdf 2>/dev/null || true
           if [ ! -f "/tmp/out/$N.pdf" ]; then
             NEW=0
-            git fetch -q origin milkex-pdf && git show "origin/milkex-pdf:$N.pdf" > "/tmp/out/$N.pdf" 2>/dev/null || rm -f "/tmp/out/$N.pdf"
+            git show "origin/milkex-pdf:$N.pdf" > "/tmp/out/$N.pdf" 2>/dev/null || rm -f "/tmp/out/$N.pdf"
           fi
-          export N NEW
-          python3 -c 'import json,os,time; e=os.environ; json.dump({"name":e["REPO_NAME"],"main":e["MAIN"],"pdf":e["N"]+".pdf","compiledAt":time.time(),"by":e.get("BY",""),"source":"github","compiler":e.get("ENGINE") or "pdflatex","ok":e.get("OUTCOME")=="success","newPdf":e["NEW"]=="1"},open("/tmp/out/milkex.json","w"),ensure_ascii=False)'
+          # il PDF dei riepiloghi lo prepara MILKeX sul computer: si conserva
+          SUM=""
+          if [ "$N" != "Riepiloghi" ] && git show "origin/milkex-pdf:Riepiloghi.pdf" > /tmp/out/Riepiloghi.pdf 2>/dev/null; then SUM="Riepiloghi.pdf"; else rm -f /tmp/out/Riepiloghi.pdf; fi
+          export N NEW SUM
+          python3 -c 'import json,os,time; e=os.environ; json.dump({"name":e["REPO_NAME"],"main":e["MAIN"],"pdf":e["N"]+".pdf","compiledAt":time.time(),"by":e.get("BY",""),"source":"github","compiler":e.get("ENGINE") or "pdflatex","ok":e.get("OUTCOME")=="success","newPdf":e["NEW"]=="1",**({"summaries":e["SUM"]} if e.get("SUM") else {})},open("/tmp/out/milkex.json","w"),ensure_ascii=False)'
           cd /tmp/out
           git init -q -b milkex-pdf
           git add -A

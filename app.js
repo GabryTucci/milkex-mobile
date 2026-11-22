@@ -99,10 +99,10 @@ async function listProjects() {
 // cache dei PDF per la consultazione senza rete
 async function pdfCache() { try { return await caches.open("milkex-pdf"); } catch { return null; } }
 async function getPdf(p, fresh) {
-  const key = new Request(location.origin + "/__pdf/" + p.full);
+  const key = new Request(location.origin + "/__pdf/" + p.full + "/" + encodeURIComponent(p.info.pdf));
   const c = await pdfCache();
   const info = p.info;
-  const saved = store.get("pdfAt:" + p.full);
+  const saved = store.get("pdfAt:" + p.full + "/" + p.info.pdf);
   if (c && !fresh && saved && info && saved >= info.compiledAt) {
     const hit = await c.match(key); if (hit) return { data: await hit.arrayBuffer(), cached: true };
   }
@@ -110,7 +110,7 @@ async function getPdf(p, fresh) {
     const r = await gh(`/repos/${p.full}/contents/${enc(info.pdf)}?ref=${PDF_BRANCH}`, { accept: "application/vnd.github.raw", raw: true });
     if (!r.ok) throw new Error("PDF non trovato (" + r.status + ")");
     const data = await r.arrayBuffer();
-    if (c) { await c.put(key, new Response(data.slice(0), { headers: { "Content-Type": "application/pdf" } })); store.set("pdfAt:" + p.full, info.compiledAt); }
+    if (c) { await c.put(key, new Response(data.slice(0), { headers: { "Content-Type": "application/pdf" } })); store.set("pdfAt:" + p.full + "/" + p.info.pdf, info.compiledAt); }
     return { data };
   } catch (e) {
     const hit = c && await c.match(key);
@@ -184,7 +184,7 @@ function homeScreen() {
     h("div", { class: "thumb" + (p.info ? "" : " off") }, (p.name[0] || "?").toUpperCase()),
     h("div", { class: "t" }, h("b", {}, p.info?.name || p.name),
       h("small", {}, p.info ? [`PDF ${ago(p.info.compiledAt)}`, p.info.by ? ` · ${p.info.by}` : "",
-        h("span", { class: "pill" + (p.info.source === "github" ? " ok" : "") }, p.info.source === "github" ? "da GitHub" : "dal PC")]
+        h("span", { class: "pill" + (p.info.source === "github" ? " ok" : "") }, p.info.source === "github" ? "da GitHub" : "dal PC"), p.info.summaries ? h("span", { class: "pill" }, "riepiloghi") : ""]
         : [p.owner !== me.login ? "di " + p.owner + " · " : "", "nessun PDF: tocca per compilarlo"])),
     h("span", { class: "chev" }, icon("right")));
   const load = async force => {
@@ -214,15 +214,19 @@ async function accountSheet() {
 function viewerScreen(p) {
   const pages = h("div", { class: "pages" }), view = h("div", { class: "viewer" }, pages), num = h("div", { class: "pgnum" });
   let doc = null, zoom = 1, baseW = 0, timer = 0;
-  const title = h("h1", {}, p.info?.name || p.name, h("small", {}, p.info ? "PDF " + ago(p.info.compiledAt) : "nessun PDF"));
+  const sum = !!p.isSum;
+  const title = h("h1", {}, sum ? "Riepiloghi" : (p.info?.name || p.name), h("small", {}, p.info ? "PDF " + ago(p.info.compiledAt) : "nessun PDF"));
   const dl = h("button", { class: "round", "aria-label": "Scarica", onclick: () => download() }, icon("download"));
+  // PDF dei riepiloghi (fatti con l'AI sul computer): un tocco e si ripassa
+  const riep = !sum && p.info?.summaries ? h("button", { class: "round hot", "aria-label": "Riepiloghi", title: "Riepiloghi",
+    onclick: () => go(() => viewerScreen({ ...p, isSum: true, full: p.full, info: { ...p.info, pdf: p.info.summaries } })) }, icon("book")) : null;
   const scr = h("div", { class: "screen" },
-    h("div", { class: "bar" }, h("button", { class: "round", "aria-label": "Indietro", onclick: () => history.back() }, icon("home")), title, dl),
+    h("div", { class: "bar" }, h("button", { class: "round", "aria-label": "Indietro", onclick: () => history.back() }, sum ? backIcon() : icon("home")), title, riep, dl),
     view, num,
     h("div", { class: "dock" },
-      h("button", { onclick: () => scr.toc() }, icon("list"), "Indice"),
-      h("button", { onclick: () => go(() => filesScreen(p)) }, icon("code"), "Modifica"),
-      h("button", { class: "main", onclick: () => compile(p, scr) }, icon("recompile"), "Compila")));
+      h("button", { class: sum ? "main" : "", onclick: () => scr.toc() }, icon("list"), "Indice"),
+      sum ? null : h("button", { onclick: () => go(() => filesScreen(p)) }, icon("code"), "Modifica"),
+      sum ? null : h("button", { class: "main", onclick: () => compile(p, scr) }, icon("recompile"), "Compila")));
   scr.reload = async (fresh = true) => {
     title.lastChild.textContent = p.info ? "PDF " + ago(p.info.compiledAt) + (p.info.by ? " · " + p.info.by : "") : "nessun PDF";
     if (!p.info) {
