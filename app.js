@@ -105,7 +105,7 @@ async function listProjects() {
   const out = await Promise.all(repos.map(async r => {
     let info = null;
     try {
-      const res = await gh(`/repos/${r.full_name}/contents/milkex.json?ref=${encodeURIComponent(pdfRef(p))}`, { accept: "application/vnd.github.raw", raw: true });
+      const res = await gh(`/repos/${r.full_name}/contents/milkex.json?ref=${PDF_BRANCH}`, { accept: "application/vnd.github.raw", raw: true });
       if (res.ok) info = await res.json();
     } catch { }
     return { full: r.full_name, name: r.name, owner: r.owner.login, branch: r.default_branch, pushed: r.pushed_at, latex: isLatex(r) || !!info, info,
