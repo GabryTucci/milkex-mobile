@@ -1,8 +1,9 @@
+@font-face{font-family:"Geist";src:url("vendor/fonts/Geist-wght.ttf") format("truetype"),url("../vendor/fonts/Geist-wght.ttf") format("truetype");font-weight:100 900;font-display:swap}
 /* MILKeX Mobile: stesso stile dell'app (viola scuro, albicocca, sfumature viola→arancio) */
 :root{--grad:linear-gradient(135deg,#7b4fd6,#f0884a);--glass:rgba(255,255,255,.06);--glass2:rgba(255,255,255,.1);
   --line:rgba(255,255,255,.1);--ink:#efeaf8;--mut:#b5aacb;--peach:#ffb889;--top:env(safe-area-inset-top);--bot:env(safe-area-inset-bottom)}
 html,body{height:100%;background:#150f21}
-body{margin:0;padding:0!important;color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,sans-serif;font-size:16px;
+body{margin:0;padding:0!important;color:var(--ink);font-family:"Geist",system-ui,sans-serif;font-size:16px;
   background:radial-gradient(circle at 50% -10%,#3a2b5c 0,#1d1530 45%,#150f21 100%) fixed;overflow:hidden;-webkit-user-select:none;user-select:none}
 #app{position:fixed;inset:0;overflow:hidden}
 .ic{width:1.3em;height:1.3em}
@@ -196,3 +197,17 @@ body{background:linear-gradient(180deg,#251d35 0%,#1b1526 40%,#130f1b 100%) fixe
   box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 2px 6px rgba(0,0,0,.25)}
 .dock{background-image:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,0))}
 .pg{box-shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.35)}
+
+/* ======================================================================
+   MILKeX 2.0 — notte prugna piatta: superfici a tinta unita con linee di 1px,
+   niente riflessi; l'arancione solo sull'azione principale, i PDF come fogli.
+   ====================================================================== */
+body{background:#17121f}
+.proj,.file,.step,.oitem,.search,.field{background:#1f1829;background-image:none;box-shadow:none;border:1px solid #2e2540;border-radius:.6rem}
+.proj:active{background:#292036}
+.thumb{background:#292036;background-image:none;color:#ffad74;border-radius:.4rem}
+.cta,.dock button.main,.round.hot{background:#f2914f;background-image:none;color:#1f1a2e;box-shadow:none;border-radius:.5rem}
+.cta.ghost{background:#1f1829;color:var(--ink);border:1px solid #4a3e61}
+.dock{background:#1f1829;background-image:none;backdrop-filter:none;-webkit-backdrop-filter:none;border:1px solid #2e2540;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.pg{border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.35)}
+.skel{background:#292036;animation:none}

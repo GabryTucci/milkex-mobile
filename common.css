@@ -369,3 +369,31 @@ html.nav-cover{background:var(--night)}
 #splash,#navfx{background:linear-gradient(180deg,#251d35 0%,#1b1526 45%,#130f1b 100%)}
 #offline{background:linear-gradient(180deg,rgba(37,29,53,.98),rgba(19,15,27,.99))}
 .toast{background-image:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,0))}
+
+/* ======================================================================
+   MILKeX 2.0: Geist, carta lilla e inchiostro prugna, colore solo dove si agisce.
+   Superfici piatte separate da linee di 1px; ombre solo su ciò che galleggia.
+   ====================================================================== */
+@font-face{font-family:"Geist";src:url("/vendor/fonts/Geist-wght.ttf") format("truetype");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Geist Mono";src:url("/vendor/fonts/GeistMono-wght.ttf") format("truetype");font-weight:100 900;font-display:swap}
+:root{
+  font-family:"Geist",system-ui,sans-serif;
+  --border:#e6e1ef;--muted:#655c7d;--panel2:#f0ecf7;
+  --accent:#c75a1e;--accent2:#a84b17;--accent-hover:#a84b17;
+  --lift:none;--chromefx:none;--raise:none;
+  --shadow:0 8px 24px rgba(31,26,46,.12);
+}
+:root[data-theme="dark"]{--border:#2e2540;--muted:#a99fc0;--accent:#f2914f;--accent2:#ffad74;--accent-hover:#ffad74;--lift:none;--chromefx:none;--raise:none;--shadow:0 8px 24px rgba(0,0,0,.4)}
+.btn.primary,.btn:not(.primary),.toast{background-image:none}
+.btn.primary{box-shadow:none}
+.modal{box-shadow:var(--shadow)}
+.num,table,time{font-variant-numeric:tabular-nums}
+.rawlog,.diff,.fixdiff pre,code,kbd{font-family:"Geist Mono",monospace}
+
+/* passaggio morbido tra le pagine di MILKeX (dissolvenza breve) */
+@view-transition{navigation:auto}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.2s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion:reduce){@view-transition{navigation:none}}
+.modal{animation:mx-pop .18s cubic-bezier(.2,.8,.2,1) both}
+@keyframes mx-pop{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.modal{animation:none}}
