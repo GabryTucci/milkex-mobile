@@ -211,3 +211,36 @@ body{background:#17121f}
 .dock{background:#1f1829;background-image:none;backdrop-filter:none;-webkit-backdrop-filter:none;border:1px solid #2e2540;box-shadow:0 8px 24px rgba(0,0,0,.4)}
 .pg{border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.35)}
 .skel{background:#292036;animation:none}
+
+/* ===== MILKeX Mobile nel design "Latte": notte Milky Way, schede di latte scuro, titoli nel serif di LaTeX ===== */
+@font-face{font-family:"Latin Modern";src:url("vendor/katex/fonts/KaTeX_Main-Regular.woff2") format("woff2"),url("../vendor/katex/fonts/KaTeX_Main-Regular.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Geist Mono";src:url("vendor/fonts/GeistMono-wght.ttf") format("truetype"),url("../vendor/fonts/GeistMono-wght.ttf") format("truetype");font-weight:100 900;font-display:swap}
+:root{--glass:#1a1529;--glass2:#221b35;--line:rgba(239,234,248,.09);--ink:#efeaf8;--mut:#9a90b2;--peach:#f2914f;--orange:#f2914f;--violet:#a184ec}
+html,body{background:#100c1b!important}
+body{background:
+  radial-gradient(1.2px 1.2px at 12% 18%,rgba(255,255,255,.55),transparent 70%),radial-gradient(1px 1px at 68% 9%,rgba(255,240,225,.45),transparent 70%),
+  radial-gradient(1.5px 1.5px at 84% 46%,rgba(214,200,255,.5),transparent 70%),radial-gradient(1px 1px at 33% 72%,rgba(255,255,255,.35),transparent 70%),
+  radial-gradient(1px 1px at 52% 38%,rgba(255,220,200,.4),transparent 70%),radial-gradient(1px 1px at 91% 86%,rgba(255,255,255,.35),transparent 70%),
+  radial-gradient(ellipse 80% 40% at 70% 0%,rgba(122,79,208,.16),transparent 70%),radial-gradient(ellipse 60% 35% at 0% 100%,rgba(242,145,79,.08),transparent 70%),#100c1b fixed!important}
+.screen{background:transparent!important}
+.bar{background:rgba(16,12,27,.78)!important;border-bottom:1px solid var(--line)!important}
+.bar h1{font-family:"Latin Modern","CMU Serif",Georgia,serif;font-weight:400!important;font-size:1.4rem!important}
+.round{background:var(--glass)!important;border:1px solid var(--line)!important}
+.round.hot,.dock button.main,.cta{background:var(--orange)!important;color:#1d1222!important;box-shadow:0 8px 20px -8px rgba(242,145,79,.7)!important}
+.cta.ghost{background:transparent!important;color:var(--ink)!important;border:1px solid var(--line)!important;box-shadow:none!important}
+.search,.field{background:var(--glass)!important;border:1px solid var(--line)!important;border-radius:999px!important}
+.proj,.file,.oitem,.step{background:var(--glass)!important;border:1px solid var(--line)!important;border-radius:20px!important;box-shadow:0 1px 2px rgba(0,0,0,.3),0 8px 22px -10px rgba(0,0,0,.5)}
+.proj b{font-weight:500}
+.thumb{border-radius:14px!important;background:#221b35!important}
+.step i{background:var(--ink)!important;color:#100c1b!important;font-family:"Geist Mono",monospace;font-weight:500!important}
+.pill{border-radius:999px!important}
+.pill.ok{background:rgba(161,132,236,.16)!important;color:var(--violet)!important}
+.sect{font-family:"Geist Mono",monospace;font-size:.75rem!important;letter-spacing:.02em!important;text-transform:none!important;color:var(--mut)!important}
+.welcome h2{font-family:"Latin Modern","CMU Serif",Georgia,serif;font-weight:400!important}
+.welcome .big{background:#efeaf8!important;box-shadow:none!important}
+.dock{background:rgba(26,21,41,.88)!important;border:1px solid var(--line)!important;border-radius:999px!important}
+.pgnum{font-family:"Geist Mono",monospace}
+.pg{border-radius:4px;box-shadow:0 14px 34px -12px rgba(0,0,0,.7)!important}
+.sheet{background:#1a1529!important;border-top:1px solid var(--line)!important;border-radius:24px 24px 0 0!important}
+.status{background:#1a1529!important;border:1px solid var(--line)!important;border-radius:18px!important}
+.status .bar2 i{background:var(--orange)!important}
