@@ -244,3 +244,21 @@ body{background:
 .sheet{background:#1a1529!important;border-top:1px solid var(--line)!important;border-radius:24px 24px 0 0!important}
 .status{background:#1a1529!important;border:1px solid var(--line)!important;border-radius:18px!important}
 .status .bar2 i{background:var(--orange)!important}
+
+/* ===== tema chiaro "quantistico": carta millimetrata color latte, inchiostro, schede bianco latte ===== */
+:root[data-theme="light"]{--glass:#fffcf6;--glass2:#efe8dc;--line:rgba(29,23,38,.1);--ink:#1d1726;--mut:#7a7385;--peach:#db6a2c;--orange:#db6a2c;--violet:#7a4fd0}
+:root[data-theme="light"],:root[data-theme="light"] body{background:#f6f1e8!important}
+:root[data-theme="light"] body{background:linear-gradient(rgba(29,23,38,.045) 1px,transparent 1px) 0 0/24px 24px,linear-gradient(90deg,rgba(29,23,38,.045) 1px,transparent 1px) 0 0/24px 24px,
+  radial-gradient(ellipse 70% 40% at 80% 0%,rgba(122,79,208,.08),transparent 70%),#f6f1e8 fixed!important;color:var(--ink)}
+:root[data-theme="light"] .bar{background:rgba(246,241,232,.82)!important}
+:root[data-theme="light"] .dock,:root[data-theme="light"] .keys{background:rgba(255,252,246,.9)!important}
+:root[data-theme="light"] .proj,:root[data-theme="light"] .file,:root[data-theme="light"] .oitem,:root[data-theme="light"] .step{box-shadow:0 1px 2px rgba(29,23,38,.05),0 6px 16px -8px rgba(29,23,38,.15)!important}
+:root[data-theme="light"] .thumb{background:#efe8dc!important}
+:root[data-theme="light"] .step i{background:#1d1726!important;color:#fffcf6!important}
+:root[data-theme="light"] .round.hot,:root[data-theme="light"] .dock button.main,:root[data-theme="light"] .cta{color:#fff!important}
+:root[data-theme="light"] .welcome .big{background:transparent!important}
+:root[data-theme="light"] .sheet,:root[data-theme="light"] .status{background:#fffcf6!important}
+:root[data-theme="light"] .pg{box-shadow:0 1px 2px rgba(29,23,38,.08),0 14px 34px -12px rgba(29,23,38,.3)!important}
+:root[data-theme="light"] .pill.ok{background:rgba(122,79,208,.1)!important}
+:root[data-theme="light"] .avatar{border-color:rgba(219,106,44,.5)}
+.wtheme{position:absolute;top:calc(var(--top) + .8rem);right:1rem;z-index:6}

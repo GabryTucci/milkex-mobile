@@ -192,7 +192,7 @@ function welcomeScreen(err) {
     btn.disabled = true; const v = tok.value.trim(), mm = v.match(/[#&?]t=([^&\s]+)/); store.set("token", mm ? decodeURIComponent(mm[1]) : v);
     try { await loadMe(); start(); } catch (e) { store.set("token", null); msg.textContent = e.message; btn.disabled = false; }
   } }, "Collega");
-  return h("div", { class: "screen" }, h("div", { class: "welcome" },
+  return h("div", { class: "screen" }, h("div", { class: "wtheme" }, themeButton()), h("div", { class: "welcome" },
     logo("big"),
     h("h2", { html: 'MIL<span class="lxk">K</span><span class="lxe">e</span>X' }),
     h("div", { class: "sub" }, "Mobile"),
@@ -203,6 +203,21 @@ function welcomeScreen(err) {
     h("details", { class: "tokbox" }, h("summary", {}, "Oppure incolla il collegamento copiato dal computer"), tok, msg, btn)));
 }
 
+// ---------- tema chiaro (mondo quantistico) / scuro (spazio): ricordato, vale anche per l'avvio
+const SUN = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>';
+const MOON = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>';
+function themeButton() {
+  const b = h("button", { class: "round", "aria-label": "Tema chiaro o scuro" });
+  const paint = () => { b.innerHTML = document.documentElement.dataset.theme === "light" ? MOON : SUN; };
+  b.onclick = () => {
+    const t = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    document.documentElement.dataset.theme = t;
+    try { localStorage.setItem("mx.theme", t); } catch { }
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", t === "light" ? "#f6f1e8" : "#100c1b");
+    paint();
+  };
+  paint(); return b;
+}
 // ---------- elenco progetti
 function homeScreen() {
   const me = store.get("me") || {};
@@ -235,7 +250,7 @@ function homeScreen() {
     draw();
   };
   const scr = h("div", { class: "screen" },
-    h("div", { class: "bar" }, logo("mini"), h("h1", {}, "Progetti", h("small", {}, "MILKeX Mobile")), refreshBtn,
+    h("div", { class: "bar" }, logo("mini"), h("h1", {}, "Progetti", h("small", {}, "MILKeX Mobile")), themeButton(), refreshBtn,
       me.avatar ? h("img", { class: "avatar", src: me.avatar, alt: "", onclick: () => accountSheet() }) : null),
     h("div", { class: "scroll" }, h("div", { class: "wrapc" }, h("div", { class: "search" }, icon("search"), q), list)));
   draw(); load();
