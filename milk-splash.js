@@ -14,7 +14,8 @@
   css.textContent = `
 #splash{background:${dark ? "radial-gradient(ellipse 70% 50% at 70% 0%,rgba(122,79,208,.18),transparent 70%),#100c1b" : "#f6f1e8"}!important;color:${dark ? "#efeaf8" : "#1d1726"}!important}
 #splash .sp-drop{width:240px!important;height:240px!important;margin-bottom:10px!important}
-#splash .sp-drop>svg,#splash .sp-drop::before,#splash .sp-ripple,#splash .sp-drip{display:none!important}
+#splash .sp-drop::before,#splash .sp-ripple,#splash .sp-drip{display:none!important}
+#splash .sp-drop>svg{position:absolute!important;width:0!important;height:0!important;visibility:hidden!important;animation:none!important}
 #splash canvas.spc{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;pointer-events:none}
 #splash>*:not(canvas){position:relative;z-index:1}
 #splash .sp-name{font-family:"Geist",system-ui,sans-serif;font-weight:600!important;font-size:36px!important;letter-spacing:-.01em!important;color:inherit!important;animation:spcUp .7s cubic-bezier(.2,.8,.2,1) 1.35s both!important}
@@ -35,12 +36,12 @@ ${still ? "#splash *{animation:none!important}#splash .sp-name,#splash .sp-sub,#
 
   // ---------- il logo, disegnato una volta su un canvas a parte ----------
   const MU = ["M98 74V204", "M98 116v26c0 22 14 34 33 34s33-12 33-34V74", "M164 140c0 22 7 34 24 34"].map(d => new Path2D(d));
-  const SPOTS = [["#7b4fd6", 101, 81, .62, 92, "M84 80c6-10 18-12 26-8 8 4 14 2 16 10 2 9-6 14-12 18-6 4-4 12-14 12-10 0-14-8-18-14-4-6-4-12 2-18z"],
-    ["#f0884a", 150, 163, .62, 174, "M132 162c6-8 16-8 22-4 6 4 14 0 18 8 4 8-2 14-8 18-6 4-10 10-20 8-10-2-18-6-18-14 0-6 2-10 6-16z"],
-    ["#f0884a", 169, 81, .62, 92, "M158 82c4-6 12-6 16-2 4 4 10 4 10 10 0 6-6 8-10 10-4 2-10 4-14 0-4-4-6-12-2-18z"],
-    ["#7b4fd6", 88, 168, .62, 179, "M80 170c4-6 12-6 16-2 4 4 8 8 6 14-2 6-8 8-14 8-6 0-10-6-10-10 0-4-2-6 2-10z"],
-    ["#7b4fd6", 176, 126, 1.25, 137, "M172 132c3-4 9-4 11 0 2 4 0 9-5 10-5 1-9-5-6-10z"],
-    ["#f0884a", 105, 120, 1.25, 131, "M100 128c3-4 9-3 10 1 1 4-3 8-7 7-4-1-6-5-3-8z"]].map(([c, x, y, s, y2, d]) => ({ c, x, y, s, y2, p: new Path2D(d) }));
+  const SPOTS = [["#7a4fd0", 101, 81, .62, 92, "M84 80c6-10 18-12 26-8 8 4 14 2 16 10 2 9-6 14-12 18-6 4-4 12-14 12-10 0-14-8-18-14-4-6-4-12 2-18z"],
+    ["#db6a2c", 150, 163, .62, 174, "M132 162c6-8 16-8 22-4 6 4 14 0 18 8 4 8-2 14-8 18-6 4-10 10-20 8-10-2-18-6-18-14 0-6 2-10 6-16z"],
+    ["#db6a2c", 169, 81, .62, 92, "M158 82c4-6 12-6 16-2 4 4 10 4 10 10 0 6-6 8-10 10-4 2-10 4-14 0-4-4-6-12-2-18z"],
+    ["#7a4fd0", 88, 168, .62, 179, "M80 170c4-6 12-6 16-2 4 4 8 8 6 14-2 6-8 8-14 8-6 0-10-6-10-10 0-4-2-6 2-10z"],
+    ["#7a4fd0", 176, 126, 1.25, 137, "M172 132c3-4 9-4 11 0 2 4 0 9-5 10-5 1-9-5-6-10z"],
+    ["#db6a2c", 105, 120, 1.25, 131, "M100 128c3-4 9-3 10 1 1 4-3 8-7 7-4-1-6-5-3-8z"]].map(([c, x, y, s, y2, d]) => ({ c, x, y, s, y2, p: new Path2D(d) }));
   const muT = g => { g.translate(0, -11); g.translate(128, 128); g.transform(1, 0, Math.tan(-14 * Math.PI / 180), 1, 0, 0); g.translate(-128, -128); };
   const L = document.createElement("canvas"); L.width = L.height = 512;
   (() => {
@@ -122,13 +123,13 @@ ${still ? "#splash *{animation:none!important}#splash .sp-name,#splash .sp-sub,#
       const pop = 1 + (1 - logoIn) * .06; ctx.translate(128, 128); ctx.scale(pop, pop); ctx.translate(-128, -128);
       ctx.globalAlpha = logoIn;
       if (dark) { ctx.shadowColor = "rgba(196,168,255,.6)"; ctx.shadowBlur = 40 + 10 * Math.sin(t * .003); }
-      ctx.fillStyle = dark ? "#231a36" : "#1d1726"; ctx.beginPath(); ctx.arc(128, 128, 122, 0, 6.283); ctx.fill();
+      ctx.fillStyle = "#1d1726"; ctx.beginPath(); ctx.arc(128, 128, 122, 0, 6.283); ctx.fill();
       ctx.shadowBlur = 0;
       ctx.drawImage(L, 0, 0, 256, 256);
       // anello del logo che si disegna
       const ring = sm((t - 1450) / 800);
       if (ring > 0) {
-        const g = ctx.createLinearGradient(0, 0, 0, 256); g.addColorStop(0, "#7b4fd6"); g.addColorStop(1, "#f0884a");
+        const g = ctx.createLinearGradient(0, 0, 256, 256); g.addColorStop(0, "#7a4fd0"); g.addColorStop(1, "#db6a2c");
         ctx.strokeStyle = g; ctx.lineWidth = 10; ctx.lineCap = "round"; ctx.beginPath(); ctx.arc(128, 128, 115, -Math.PI / 2, -Math.PI / 2 + ring * 6.283); ctx.stroke();
       }
       ctx.restore();
