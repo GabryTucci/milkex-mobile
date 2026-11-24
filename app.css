@@ -237,7 +237,7 @@ body{background:
 .pill.ok{background:rgba(161,132,236,.16)!important;color:var(--violet)!important}
 .sect{font-family:"Geist Mono",monospace;font-size:.75rem!important;letter-spacing:.02em!important;text-transform:none!important;color:var(--mut)!important}
 .welcome h2{font-family:"Latin Modern","CMU Serif",Georgia,serif;font-weight:400!important}
-.welcome .big{background:#efeaf8!important;box-shadow:none!important}
+.welcome .big{background:transparent!important;box-shadow:none!important}
 .dock{background:rgba(26,21,41,.88)!important;border:1px solid var(--line)!important;border-radius:999px!important}
 .pgnum{font-family:"Geist Mono",monospace}
 .pg{border-radius:4px;box-shadow:0 14px 34px -12px rgba(0,0,0,.7)!important}
@@ -262,3 +262,9 @@ body{background:
 :root[data-theme="light"] .pill.ok{background:rgba(122,79,208,.1)!important}
 :root[data-theme="light"] .avatar{border-color:rgba(219,106,44,.5)}
 .wtheme{position:absolute;top:calc(var(--top) + .8rem);right:1rem;z-index:6}
+/* mascotte delle schermate vuote */
+:root{--ink-3:#9a90b2;--line-2:rgba(239,234,248,.16);--milk:#1a1529}
+:root[data-theme="light"]{--ink-3:#7a7385;--line-2:rgba(29,23,38,.16);--milk:#fffcf6}
+.empty .msc{display:flex;flex-direction:column;align-items:center;gap:.35rem;margin:0 auto .8rem}
+.empty .msc svg{width:min(15rem,70vw);height:auto;overflow:visible}
+.empty .msc i{font-family:"Latin Modern","CMU Serif",Georgia,serif;font-size:.95rem;color:var(--mut);text-align:center;max-width:18rem}

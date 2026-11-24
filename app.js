@@ -218,6 +218,15 @@ function themeButton() {
   };
   paint(); return b;
 }
+// ---------- mascotte delle schermate vuote (le stesse del computer, a turno)
+function mascot() {
+  const w = h("div", { class: "msc" });
+  if (typeof mascotPick !== "function") return w;
+  let m = mascotPick(), n = 0;
+  while (!m.svg && n++ < 8) m = mascotPick();
+  if (m.svg) w.innerHTML = m.svg.replace("<svg ", '<svg class="mascot" ') + "<i>" + m.quip + "</i>";
+  return w;
+}
 // ---------- elenco progetti
 function homeScreen() {
   const me = store.get("me") || {};
@@ -232,7 +241,7 @@ function homeScreen() {
     const mine = items.filter(p => p.owner === me.login), shared = items.filter(p => p.owner !== me.login);
     const sec = (title, arr) => { if (!arr.length) return; list.append(h("div", { class: "sect" }, title)); arr.forEach((p, i) => list.append(card(p, i))); };
     sec("I tuoi progetti", mine); sec("Condivisi con te", shared);
-    if (!items.length) list.append(h("div", { class: "empty" }, icon("book"), h("div", {}, f ? "Nessun progetto con questo nome." : "Nessun progetto LaTeX su GitHub. Collega un progetto a GitHub da MILKeX sul computer.")));
+    if (!items.length) list.append(h("div", { class: "empty" }, mascot(), h("div", {}, f ? "Nessun progetto con questo nome." : "Nessun progetto LaTeX su GitHub. Collega un progetto a GitHub da MILKeX sul computer.")));
   };
   const card = (p, i) => h("div", { class: "proj", style: `animation-delay:${Math.min(i, 10) * 45}ms`, onclick: () => go(() => viewerScreen(p)) },
     h("div", { class: "thumb" + (p.info ? "" : " off") }, (p.name[0] || "?").toUpperCase()),
@@ -284,7 +293,7 @@ function viewerScreen(p) {
   scr.reload = async (fresh = true) => {
     title.lastChild.textContent = p.info ? "Compilato " + when(p.info.compiledAt) + " · " + (p.info.source === "github" ? "su GitHub" : "dal PC") : "nessun PDF";
     if (!p.info) {
-      pages.replaceChildren(h("div", { class: "empty", style: "padding-top:4rem;max-width:22rem" }, logo("big"), h("p", {},
+      pages.replaceChildren(h("div", { class: "empty", style: "padding-top:3rem;max-width:22rem" }, mascot(), h("p", {},
         "Questo progetto non ha ancora un PDF su GitHub. Premi ", h("b", {}, "Compila"), ": GitHub lo crea in un paio di minuti, senza il computer.")));
       return;
     }
@@ -548,7 +557,7 @@ function filesScreen(p) {
       list.replaceChildren(...files.map((f, i) => h("div", { class: "file" + (f.path === main ? " mainf" : ""), style: `animation-delay:${Math.min(i, 12) * 30}ms`,
         onclick: () => go(() => editScreen(p, f.path)) }, icon(/\.tex$/i.test(f.path) ? "page" : "code"), h("span", {}, f.path),
         f.path === main ? h("small", {}, "principale") : h("small", {}, ((f.size || 0) / 1024).toFixed(1) + " KB"))));
-      if (!files.length) list.replaceChildren(h("div", { class: "empty" }, "Nessun file di testo nel progetto."));
+      if (!files.length) list.replaceChildren(h("div", { class: "empty" }, mascot(), "Nessun file di testo nel progetto."));
     } catch (e) { list.replaceChildren(h("div", { class: "empty" }, e.message)); }
   })();
   return scr;
