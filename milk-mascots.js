@@ -17,14 +17,14 @@ const MASCOTS = (() => {
 <path d="M70 70v52l44 22V92z" fill="#e8792f" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
 <path d="M158 70v52l-44 22V92z" fill="#c85f1d" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
 <path d="M78 98l28 14M80 112l26 13M140 104l10-5M136 120l14-7" stroke="#a84b17" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>
-<path d="M76 73l-2-22 16 13zM100 61l12-14 2 20z" fill="#e8792f" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
-<path d="M77 69l-1-12 8 7z" fill="#f2b3bd"/>
-<ellipse cx="85" cy="100" rx="4" ry="5.2" fill="#fff3a8" stroke="${INK}" stroke-width="1.6" transform="skewY(26.5) translate(0 -42)"/>
-<ellipse cx="102" cy="108" rx="4" ry="5.2" fill="#fff3a8" stroke="${INK}" stroke-width="1.6" transform="skewY(26.5) translate(0 -51)"/>
+<path d="M74 72L78 53L89 78ZM96 83L103 64L111 90Z" fill="#e8792f" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
+<path d="M77.5 71L79.5 59L85.5 74ZM99.5 82L103.5 70L107.5 85.5Z" fill="#f2b3bd"/>
 <g transform="skewY(26.5)">
-<path d="M91 68h6l-3 3.4z" fill="#f2b3bd" stroke="${INK}" stroke-width="1.1" stroke-linejoin="round"/>
-<path d="M94 71.4v1.6M94 73q-2.6 3-5.4.6M94 73q2.6 3 5.4.6" fill="none" stroke="${INK}" stroke-width="1.4" stroke-linecap="round"/>
-<path d="M86 70l-16-3M86 72.5l-16 1.5M102 70l14-3M102 72.5l14 1.5" stroke="${INK}" stroke-width="1" stroke-linecap="round" opacity=".7"/></g>
+<ellipse cx="84" cy="55" rx="4.4" ry="5.6" fill="#fff3a8" stroke="${INK}" stroke-width="1.6"/><ellipse cx="100" cy="55" rx="4.4" ry="5.6" fill="#fff3a8" stroke="${INK}" stroke-width="1.6"/>
+<ellipse cx="84.6" cy="55.6" rx="1.3" ry="3.4" fill="${INK}"/><ellipse cx="100.6" cy="55.6" rx="1.3" ry="3.4" fill="${INK}"/>
+<path d="M89 63.5h6l-3 3.4z" fill="#f2b3bd" stroke="${INK}" stroke-width="1.1" stroke-linejoin="round"/>
+<path d="M92 66.9v1.6M92 68.5q-2.6 3-5.4.6M92 68.5q2.6 3 5.4.6" fill="none" stroke="${INK}" stroke-width="1.4" stroke-linecap="round"/>
+<path d="M84 66l-11-2M84 68.5l-11 1.4M100 66l11-2M100 68.5l11 1.4" stroke="${INK}" stroke-width="1" stroke-linecap="round" opacity=".7"/></g>
 ${T(196, 128, 0, "V = ℓ³", V, 14)}${T(196, 146, 0, "ℓ ≈ 50 cm")}</svg>` },
     { // 2: pastore tedesco di Maxwell: è una calamita, con le linee del campo magnetico attorno
       id: "dog", title: "Sezione vuota", quip: "Il pastore di Maxwell sorveglia il flusso: ∮ B·dA = 0.",
@@ -34,21 +34,27 @@ ${T(196, 128, 0, "V = ℓ³", V, 14)}${T(196, 146, 0, "ℓ ≈ 50 cm")}</svg>` }
 <path d="M180 92C180 144 70 144 70 92"/><path d="M186 92C190 170 60 170 64 92"/><path d="M192 92C204 192 46 192 58 92"/></g>
 <g fill="${V}" opacity=".7"><path d="M118 53l6-3v6zM118 34l6-3v6zM118 15l6-3v6zM118 131l6 3v-6zM118 150l6 3v-6zM118 169l6 3v-6z"/></g>
 <ellipse cx="125" cy="92" rx="76" ry="52" fill="none" stroke="${O}" stroke-width="1.4" stroke-dasharray="2 5"/>
-<ellipse cx="124" cy="140" rx="50" ry="4" fill="${INK}" opacity=".08"/>
-<path d="M82 92c-12 0-20 10-24 22 8-4 14-8 20-14" fill="#8a5a2b" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
-<g stroke-linecap="round" fill="none">
-<path d="M92 108l-3 28M104 110l2 26M146 108l-2 28M156 106l4 30" stroke="${INK}" stroke-width="8.4"/>
-<path d="M92 108l-3 28M104 110l2 26M146 108l-2 28M156 106l4 30" stroke="#a8743d" stroke-width="5"/></g>
-<g fill="#5b3b1d" stroke="${INK}" stroke-width="1.6"><ellipse cx="88" cy="137" rx="5" ry="2.6"/><ellipse cx="107" cy="137" rx="5" ry="2.6"/><ellipse cx="145" cy="137" rx="5" ry="2.6"/><ellipse cx="161" cy="137" rx="5" ry="2.6"/></g>
-<path d="M80 94c0-14 16-20 42-20 22 0 36 4 40 14 4 10 0 22-12 26-14 4-40 4-56 0-10-2-14-10-14-20z" fill="#b07a40" stroke="${INK}" stroke-width="2.2"/>
-<path d="M84 90c4-10 24-14 44-12 14 2 24 6 28 12-14 8-58 10-72 0z" fill="#2c2230"/>
-<path d="M156 92c2-10 6-20 14-26" stroke="${INK}" stroke-width="2.2" fill="none"/>
-<path d="M150 80c2-16 12-26 26-26 12 0 20 8 22 16l12 4c4 2 4 8 0 10l-14 4c-6 2-14 2-20 0-12-2-24-2-26-8z" fill="#b07a40" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
-<path d="M196 80l12 4c3 1 3 6 0 7l-12 3" fill="#2c2230"/><circle cx="210" cy="86" r="2.6" fill="${INK}"/>
-<path d="M160 64l-4-20 16 14zM174 58l6-20 8 20z" fill="#2c2230" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
-<path d="M161 60l-2-9 7 6z" fill="#d68aa0" opacity=".6"/>
-<circle cx="185" cy="72" r="3" fill="${INK}"/><circle cx="186" cy="71" r="1" fill="#fff"/>
-<path d="M200 94q-6 4-12 1" fill="none" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/>
+<ellipse cx="124" cy="143" rx="62" ry="4" fill="${INK}" opacity=".08"/>
+<path d="M 82 90 C 66 94 56 108 48 124 C 46 130 54 131 59 125 C 66 114 74 106 86 101 Z" fill="#b9793f" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+<path d="M 80 92 C 68 97 61 106 56 114 C 62 110 70 104 82 100 Z" fill="#241a22"/>
+<g stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M 100 106 L 95 126 L 101 140 M 163 106 L 164 140" stroke="${INK}" stroke-width="9"/><path d="M 100 106 L 95 126 L 101 140 M 163 106 L 164 140" stroke="#8a5527" stroke-width="6"/>
+<path d="M 89 104 L 82 125 L 89 140 M 152 106 L 150 140" stroke="${INK}" stroke-width="10"/><path d="M 89 104 L 82 125 L 89 140 M 152 106 L 150 140" stroke="#b9793f" stroke-width="7"/></g>
+<g fill="#8a5527" stroke="${INK}" stroke-width="1.6"><ellipse cx="92" cy="141" rx="6" ry="2.8"/><ellipse cx="104" cy="141" rx="5.5" ry="2.6"/><ellipse cx="152" cy="141" rx="6" ry="2.8"/><ellipse cx="166" cy="141" rx="5.5" ry="2.6"/></g>
+<g fill="#8a5527" stroke="${INK}" stroke-width="1.6"><ellipse cx="92" cy="141" rx="6" ry="2.8"/><ellipse cx="104" cy="141" rx="5.5" ry="2.6"/><ellipse cx="152" cy="141" rx="6" ry="2.8"/><ellipse cx="166" cy="141" rx="5.5" ry="2.6"/></g>
+<path d="M142 84C144 66 155 53 170 49L185 70C181 85 173 99 160 105C151 105 144 97 142 84Z" fill="#b9793f" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
+<path d="M145 80C148 68 155 59 165 54C161 63 155 71 151 82Z" fill="#241a22" opacity=".9"/>
+<path d="M 80 88 C 94 80 130 78 150 74 C 166 71 174 86 172 100 C 170 112 162 120 151 120 C 137 118 111 112 111 112 C 98 114 86 116 80 108 C 76 102 76 94 80 88 Z" fill="#b9793f" stroke="${INK}" stroke-width="2.2"/>
+<path d="M 83 87 C 100 80 128 77 150 75 C 153 84 146 93 131 97 C 111 101 91 100 83 93 Z" fill="#241a22"/>
+<path d="M167 57L164 28L183 48ZM181 50L189 23L197 53Z" fill="#b9793f" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+<path d="M169.5 52L167.5 34L178 47ZM184.5 48.5L189 31L193 50Z" fill="#e8a3ad"/>
+<path d="M163 60C166 47 180 43 190 49C196 53 200 59 213 63C220 65 221 73 215 76C204 79 196 81 186 81C175 81 165 73 163 60Z" fill="#b9793f" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
+<path d="M203 61C208 62 212 64 216 66C218 70 216 74 212 75C208 72 205 68 203 65Z" fill="#241a22"/>
+<ellipse cx="216.5" cy="66.5" rx="3.6" ry="2.8" fill="${INK}"/>
+<path d="M199 77C201 85 205 90 209 88C212 84 210 79 206 77Z" fill="#e58fa0" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M190 78Q198 80 212 76" fill="none" stroke="${INK}" stroke-width="1.4" stroke-linecap="round"/>
+<ellipse cx="189" cy="58" rx="2.8" ry="3.2" fill="${INK}"/><circle cx="190" cy="57" r=".9" fill="#fff"/>
+<path d="M184 53q4-3 9 0" fill="none" stroke="${INK}" stroke-width="1.4" stroke-linecap="round"/>
 <g font-family="Latin Modern,serif" font-weight="700" font-size="13"><text x="214" y="112" fill="${O}">N</text><text x="34" y="112" fill="${V}">S</text></g>
 ${T(14, 28, 0, "∮ B · dA = 0", O, 14)}</svg>` },
     { // 3: piccione vitruviano
