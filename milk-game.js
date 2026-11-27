@@ -55,7 +55,23 @@ html.mxplaying .gamebtn{display:grid!important;z-index:8100}
 .mxintro .eqs{font-family:"Latin Modern",serif;font-style:italic;color:rgba(196,168,255,.55);font-size:14px;margin:10px 0 4px;letter-spacing:.04em}
 .mxintro .ghost{position:absolute;font-family:"Latin Modern",serif;font-style:italic;color:rgba(242,145,79,.16);pointer-events:none;animation:mxFloat 6s ease-in-out infinite}
 @keyframes mxFloat{50%{transform:translateY(-10px) rotate(-4deg)}}
-.mxintro button{margin-top:6px;font-size:16px;padding:12px 30px;box-shadow:0 0 22px rgba(242,145,79,.4)}`;
+.mxintro button{margin-top:6px;font-size:16px;padding:12px 30px;box-shadow:0 0 22px rgba(242,145,79,.4)}
+@media (max-width:699px){
+.mxover{padding:58px 12px 12px;box-sizing:border-box}
+.mxover>div{max-width:100%;box-sizing:border-box;max-height:calc(100dvh - 80px);overflow:auto}
+.mxintro{padding:20px 16px 18px!important;min-width:0!important;width:100%}
+.mxintro h2.goth{font-size:clamp(32px,11vw,46px)!important}
+.mxintro .sub{font-size:19px}
+.mxintro .clock{font-size:11px}
+.mxover p{font-size:14px!important;line-height:1.4}
+.mxintro .legend{gap:8px 10px;font-size:13px;margin:4px auto 10px}
+.mxintro .legend .lt{font-size:15px}
+.mxintro .legend .li span{font-size:12px}
+.mxover button{font-size:16px!important}
+.mxhud{padding:10px 12px;font-size:14px!important}
+.mxhud b{font-size:17px}
+.mxhud .lives{padding:4px 8px;gap:4px}.mxhud .lives svg{width:22px;height:19px}
+.mxintro .ghost{display:none}}`;
   document.head.append(css);
   const ICON = `<svg viewBox="0 0 48 40"><ellipse cx="24" cy="31" rx="18" ry="6" fill="#2a2140" stroke="#c4a8ff" stroke-width="1.4"/>
 <circle cx="14" cy="32" r="1.6" fill="#f2914f"/><circle cx="24" cy="32.5" r="1.6" fill="#f2914f"/><circle cx="34" cy="32" r="1.6" fill="#f2914f"/>
@@ -178,7 +194,11 @@ html.mxplaying .gamebtn{display:grid!important;z-index:8100}
     ctx.fillStyle = "#1d1726"; ctx.beginPath(); ctx.arc(-2.6, -17, 1.2, 0, 6.283); ctx.arc(2.6, -17, 1.2, 0, 6.283); ctx.fill();
     ctx.strokeStyle = "#e9dcc0"; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(-5, -20); ctx.lineTo(-8, -25); ctx.moveTo(5, -20); ctx.lineTo(8, -25); ctx.stroke();
     ctx.strokeStyle = "rgba(220,232,255,.85)"; ctx.fillStyle = "rgba(188,212,255,.16)"; ctx.lineWidth = 1.4;
-    ctx.beginPath(); ctx.arc(0, -15, 12, 0, 6.283); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, -15.5, 10, 0, 6.283); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,.7)"; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(0, -15.5, 7.5, 3.6, 4.4); ctx.stroke();
+    // collare sul collo: il casco parte da qui
+    ctx.fillStyle = "#cfd3e6"; ctx.strokeStyle = "#3a3346"; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.ellipse(0, -6, 7, 2.4, 0, 0, 6.283); ctx.fill(); ctx.stroke();
     ctx.restore();
   }
   function frame(t) {

@@ -667,20 +667,101 @@ function gameIcon() {
   return s.firstChild;
 }
 function gamesScreen() {
-  const card = (cls, title, sub, text, onclick) => h("button", { class: "gcard " + cls, onclick }, h("div", { class: "gpic" }), h("div", { class: "gtx" }, h("small", {}, sub), h("b", {}, title), h("p", {}, typeof text === "function" ? text() : text)));
+  const card = (cls, title, sub, text, onclick, art, cows) => h("button", { class: "gcard " + cls, onclick }, svgEl(art, cows), h("div", { class: "gtx" }, h("small", {}, sub), h("b", {}, title), h("p", {}, typeof text === "function" ? text() : text)));
   const dark = () => document.documentElement.dataset.theme === "dark";
   return h("div", { class: "screen" },
     h("div", { class: "bar" }, h("button", { class: "round", "aria-label": "Indietro", onclick: () => history.back() }, backIcon()), h("h1", {}, "Giochi", h("small", {}, "per le pause dallo studio"))),
     h("div", { class: "scroll" }, h("div", { class: "wrapc gwrap" },
-      card("glab", "La mucca di Schrödinger", "laboratorio",
-        () => dark() ? "Nel tema scuro la mucca fluttua nello spazio: lanciala e la gravità delle galassie la attira." : "Fionda a raggi gamma, scatola di Schrödinger e scanner a raggi X. Trascina la mucca su un altro orbitale.",
-        () => go(labScreen)),
+      card("glab", "Mimì e Mumù nel mondo della fisica", "laboratorio",
+        () => dark() ? "Nel mondo astronomico c'è Mumù: fluttua nello spazio, lanciala e la gravità delle galassie la attira. Col tema chiaro trovi Mimì." : "Nel mondo quantistico c'è Mimì: fionda a raggi gamma, scatola e scanner a raggi X. Col tema scuro trovi Mumù nello spazio.",
+        () => go(labScreen), labArt(), true),
       card("gnight", "Nightmare before the exam", "minigioco", "La notte prima dell'esame i concetti che fanno paura attaccano. Difendi la mucca, raccogli gli aiuti, entra in classifica.",
-        () => window.MX_GAME_OPEN && window.MX_GAME_OPEN()))));
+        () => window.MX_GAME_OPEN && window.MX_GAME_OPEN(), nightArt()))));
+}
+
+function cowArt(x, y, s, spots, flip, rot = 0, helmet = false) {
+  // mucca di profilo che guarda a destra (flip: a sinistra); spots = [macchia grande, macchia piccola]
+  const ink = "#2a2236", milk = "#fbf7ef";
+  const leg = (lx, a) => `<g transform="rotate(${a} ${lx} 8)"><path d="M${lx} 8v13" stroke="${ink}" stroke-width="6.5" stroke-linecap="round"/><path d="M${lx} 8v12" stroke="${milk}" stroke-width="4" stroke-linecap="round"/><rect x="${lx - 3.2}" y="19" width="6.4" height="4" rx="1.5" fill="${ink}"/></g>`;
+  const k = helmet ? 14 : 0;
+  return `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${flip ? -s : s} ${s})">
+    <path d="M-25 -4q-9 4-8 16" stroke="${ink}" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M-33 12q-3 3 0 6q3-2 0-6z" fill="${ink}"/>
+    ${leg(-16, helmet ? 18 : 0)}${leg(-8, helmet ? -10 : 0)}${leg(8, helmet ? 14 : 0)}${leg(16, helmet ? -16 : 0)}
+    <ellipse cx="0" cy="0" rx="26" ry="14" fill="${milk}" stroke="${ink}" stroke-width="2"/>
+    <path d="M-12 -8q6-8 14-3q4 6-3 10q-9 4-12-2q-2-3 1-5z" fill="${spots[0]}"/>
+    <path d="M9 2q5-4 10 0q2 5-4 6q-6 0-6-6z" fill="${spots[1]}"/>
+    <path d="M-4 12q3 5 6 0" fill="#f0b3bd" stroke="${ink}" stroke-width="1.4"/>
+    <g transform="translate(26 -12)">
+      <path d="M-5 -9q-4-6 0-8M6 -9q4-6 0-8" stroke="#d8c9a8" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <ellipse cx="-9" cy="-6" rx="5" ry="2.6" transform="rotate(-25 -9 -6)" fill="${milk}" stroke="${ink}" stroke-width="1.6"/>
+      <ellipse cx="0" cy="0" rx="10" ry="11" fill="${milk}" stroke="${ink}" stroke-width="2"/>
+      <path d="M-3 -10q4 3 8-1" fill="${spots[1]}"/>
+      <circle cx="3" cy="-3" r="2" fill="${ink}"/><circle cx="3.7" cy="-3.6" r=".7" fill="#fff"/>
+      <ellipse cx="4" cy="6.5" rx="7.5" ry="5.5" fill="#f0b3bd" stroke="${ink}" stroke-width="1.6"/>
+      <circle cx="2" cy="6" r="1.1" fill="${ink}"/><circle cx="7" cy="6" r="1.1" fill="${ink}"/>
+      ${helmet ? `<circle cx="1" cy="0" r="${k + 3}" fill="rgba(196,168,255,.16)" stroke="#c4a8ff" stroke-width="1.8"/><path d="M-8 -10q4-5 10-5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/>` : ""}
+    </g></g>`;
+}
+function atomDots(cx, cy, R) {
+  let s = "";
+  [0, 60, -60].forEach((rot, i) => {
+    const col = i ? "#7a4fd0" : "#db6a2c", c = Math.cos(rot * Math.PI / 180), sn = Math.sin(rot * Math.PI / 180);
+    const P = a => { const x = Math.cos(a) * R, y = Math.sin(a) * R * .32; return [cx + x * c - y * sn, cy + x * sn + y * c]; };
+    for (let k = 0; k < 34; k++) { const [x, y] = P(k / 34 * 2 * Math.PI); s += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r=".75" fill="${col}" opacity=".45"/>`; }
+    const a0 = 1.2 + i * 2.1;
+    for (let j = 0; j < 9; j++) { const [x, y] = P(a0 - j * .09); s += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(1.9 - j * .17).toFixed(2)}" fill="${col}" opacity="${(1 - j * .1).toFixed(2)}"/>`; }
+  });
+  return s;
+}
+function labArt() {
+  return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+    <defs><pattern id="gq" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M10 0H0V10" fill="none" stroke="rgba(29,23,38,.09)"/></pattern>
+      <clipPath id="gcl"><path d="M0 0H120L0 120Z"/></clipPath></defs>
+    <rect width="120" height="120" fill="#120d20"/>
+    <circle cx="51.5" cy="96.6" r="0.6" fill="#fff" opacity="0.85"/><circle cx="56.1" cy="107.4" r="1" fill="#ffe6c4" opacity="0.70"/><circle cx="103.3" cy="42.9" r="1.2" fill="#ffe6c4" opacity="0.67"/><circle cx="110.7" cy="81.3" r="1.6" fill="#fff" opacity="0.78"/><circle cx="64.1" cy="110.3" r="1.6" fill="#fff" opacity="0.63"/><circle cx="88.0" cy="86.9" r="1.2" fill="#fff" opacity="0.81"/><circle cx="63.7" cy="91.3" r="1" fill="#fff" opacity="0.85"/><circle cx="104.8" cy="98.1" r="1.2" fill="#ffe6c4" opacity="0.92"/><circle cx="105.3" cy="94.3" r="0.8" fill="#d9ccff" opacity="0.86"/><circle cx="105.9" cy="43.6" r="1.2" fill="#d9ccff" opacity="0.93"/><circle cx="40.5" cy="113.0" r="1.6" fill="#fff" opacity="0.88"/><circle cx="79.2" cy="52.0" r="0.8" fill="#ffe6c4" opacity="0.91"/>
+    <g clip-path="url(#gcl)"><rect width="120" height="120" fill="#f6f1e8"/><rect width="120" height="120" fill="url(#gq)"/>${atomDots(37, 40, 30)}</g>
+    <path d="M0 120L120 0" stroke="#db6a2c" stroke-width="1.5" stroke-dasharray="3 4"/>
+  </svg>`;
+}
+function nightArt() {
+  const alien = (x, y, s, c) => `<g transform="translate(${x} ${y}) scale(${s})">
+    <path d="M-12 4q0-18 12-18t12 18l-3 6-3-5-3 6-3-6-3 6-3-6-3 5z" fill="${c}"/>
+    <circle cx="0" cy="-4" r="5.5" fill="#fff"/><circle cx="1" cy="-3.5" r="2.6" fill="#140c1c"/>
+    <path d="M-7-12l-4-6M7-12l4-6" stroke="${c}" stroke-width="2" stroke-linecap="round"/><circle cx="-11" cy="-18" r="2" fill="${c}"/><circle cx="11" cy="-18" r="2" fill="${c}"/></g>`;
+  return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+    <defs><radialGradient id="gnr" cx="50%" cy="0%" r="80%"><stop offset="0" stop-color="#7a1424"/><stop offset="1" stop-color="#140c1c"/></radialGradient>
+      <linearGradient id="gbeam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2914f" stop-opacity=".5"/><stop offset="1" stop-color="#f2914f" stop-opacity="0"/></linearGradient></defs>
+    <rect width="120" height="120" fill="url(#gnr)"/>
+    <circle cx="14" cy="60" r="1" fill="#fff" opacity=".6"/><circle cx="104" cy="56" r="1.2" fill="#fff" opacity=".7"/><circle cx="60" cy="10" r="1" fill="#fff" opacity=".5"/>
+    <path d="M6 44C14 44 16 12 23 12S32 44 40 44Z" fill="#a98bf0"/><circle cx="19" cy="30" r="3.4" fill="#fff"/><circle cx="27" cy="30" r="3.4" fill="#fff"/><circle cx="19.6" cy="30.6" r="1.6" fill="#140c1c"/><circle cx="27.6" cy="30.6" r="1.6" fill="#140c1c"/><path d="M44 22q4-10 8 0t8 0 8 0 8 0" fill="none" stroke="#9fd0ff" stroke-width="5" stroke-linecap="round"/><circle cx="56" cy="20" r="3.4" fill="#fff"/><circle cx="64" cy="20" r="3.4" fill="#fff"/><circle cx="56.6" cy="20.6" r="1.6" fill="#140c1c"/><circle cx="64.6" cy="20.6" r="1.6" fill="#140c1c"/><path d="M86 8h28l-11 16 11 16H86l11-16Z" fill="#8a6ae0"/><circle cx="96" cy="24" r="3.4" fill="#fff"/><circle cx="104" cy="24" r="3.4" fill="#fff"/><circle cx="96.6" cy="24.6" r="1.6" fill="#140c1c"/><circle cx="104.6" cy="24.6" r="1.6" fill="#140c1c"/>
+    <path d="M60 68l-6 14M60 68l6 14" stroke="#ff5a6e" stroke-width="2.5" stroke-linecap="round" opacity=".0"/>
+    <circle cx="44" cy="58" r="2.5" fill="#ff5a6e"/><circle cx="80" cy="54" r="2.5" fill="#c46bff"/>
+    <path d="M36 120l14-28h20l14 28z" fill="url(#gbeam)"/>
+    <g transform="translate(60 84) scale(1.45)">
+      <path d="M-11-10a11 12 0 0 1 22 0" fill="rgba(196,168,255,.25)" stroke="#c4a8ff" stroke-width="1.4"/>
+      <circle cx="0" cy="-10" r="7.5" fill="#fbf7ef" stroke="#2a2236" stroke-width="1.6"/>
+      <path d="M-5-17l-3-4M5-17l3-4" stroke="#2a2236" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="-3" cy="-12" r="2.6" fill="#fff" stroke="#2a2236" stroke-width="1"/><circle cx="3" cy="-12" r="2.6" fill="#fff" stroke="#2a2236" stroke-width="1"/>
+      <circle cx="-3" cy="-12" r=".9" fill="#2a2236"/><circle cx="3" cy="-12" r=".9" fill="#2a2236"/>
+      <ellipse cx="0" cy="-5.5" rx="2.2" ry="2.6" fill="#2a2236"/>
+      <path d="M9-16q2 3 0 4.5q-2-1.5 0-4.5z" fill="#8fd3ff"/>
+      <ellipse cx="0" cy="0" rx="26" ry="7" fill="#2a2140" stroke="#c4a8ff" stroke-width="1.6"/>
+      <circle cx="-14" cy="0" r="1.6" fill="#f2914f"/><circle cx="0" cy="2" r="1.6" fill="#f2914f"/><circle cx="14" cy="0" r="1.6" fill="#f2914f"/>
+    </g>
+  </svg>`;
+}
+function svgEl(markup, cows) {
+  const d = document.createElement("div"); d.className = "gpic"; d.innerHTML = markup;
+  if (cows && window.MILK_COW_PIC) {
+    // le stesse mucche dell'app: Mimì in alto a sinistra, Mumù in basso a destra
+    const pic = (astro, css) => { const c = document.createElement("canvas"); c.width = c.height = astro ? 260 : 200; c.className = "gcow" + (astro ? " big" : ""); c.style.cssText = css; window.MILK_COW_PIC(c, astro, astro ? 2.1 : 2.3); d.append(c); };
+    pic(false, "left:0;top:-4%"); pic(true, "right:-6%;bottom:-8%");
+  }
+  return d;
 }
 function labScreen() {
   return h("div", { class: "screen lab" },
     h("div", { class: "bar" }, h("button", { class: "round", "aria-label": "Indietro", onclick: () => history.back() }, backIcon()),
-      h("h1", {}, "Laboratorio", h("small", {}, "la mucca di Schrödinger")), themeButton()),
+      h("h1", {}, document.documentElement.dataset.theme === "dark" ? "Mumù" : "Mimì", h("small", {}, document.documentElement.dataset.theme === "dark" ? "nel mondo astronomico" : "nel mondo quantistico")), themeButton()),
     h("div", { class: "labhint" }, document.documentElement.dataset.theme === "dark" ? "Prendi la mucca e lanciala" : "Strumenti in basso a destra · ? per la guida"));
 }

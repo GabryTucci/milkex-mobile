@@ -77,6 +77,10 @@
   const SPOTS_BODY = [[-9, -4, 6.5, 4.5, .3, ORA], [5, -6, 5, 3.6, -.4, VIO], [-1, 4, 4, 3, .1, VIO], [11, 3, 3, 2.4, .5, ORA], [-15, 3, 3.2, 2.6, -.2, ORA]];
   function tailPts(t, x0, y0, s) {
     const pts = [], sw = Math.sin(t * .0021) * .35 + Math.sin(t * .0057) * .12;
+    if (s.float) {                                   // nello spazio la coda galleggia ondulando all'indietro
+      for (let k = 0; k <= 10; k++) { const u = k / 10; pts.push([x0 - 2 - u * 13, y0 - u * 4 + Math.sin(u * 5 + t * .004) * 2.6 * u]); }
+      return pts;
+    }
     for (let k = 0; k <= 10; k++) { const u = k / 10; pts.push([x0 - 2 - u * 3 + Math.sin(u * 2.4) * sw * 9 * (1 - s.lie * .6) - s.lie * u * 6, y0 + u * (14 - s.lie * 8)]); }
     return pts;
   }
@@ -603,16 +607,16 @@ ${open ? '<path d="M8 30l18-10h46l-18 10z" fill="#3a2c22"/><path d="M8 30L1 15h4
   const AST = { x: 0, y: 0, vx: .03, vy: -.02, a: 0, va: .0004, drag: null, init: false, trail: [] };
   function drawAstro(t, x, y, ang) {
     ctx.save(); ctx.translate(x, y); ctx.rotate(ang); ctx.scale(1.05, 1.05); ctx.translate(0, 22);
-    drawCow(t, { p: t * .004, walk: .25, crouch: 0, lie: 0, graze: 0, chew: 0, closed: 0, moo: 0 }, false);   // nello spazio è sempre viva
+    drawCow(t, { p: t * .004, walk: .25, crouch: 0, lie: 0, graze: 0, chew: 0, closed: 0, moo: 0, float: 1 }, false);   // nello spazio è sempre viva
     // casco: bolla di vetro attorno alla testa, con il riflesso
-    const hx = 22, hy = -32;
-    const g = ctx.createRadialGradient(hx - 5, hy - 6, 2, hx, hy, 17);
+    const hx = 25, hy = -33;
+    const g = ctx.createRadialGradient(hx - 5, hy - 6, 2, hx, hy, 15);
     g.addColorStop(0, "rgba(255,255,255,.35)"); g.addColorStop(.6, "rgba(188,212,255,.12)"); g.addColorStop(1, "rgba(188,212,255,.28)");
-    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(hx, hy, 16.5, 0, 6.283); ctx.fill();
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(hx, hy, 14.5, 0, 6.283); ctx.fill();
     ctx.strokeStyle = "rgba(220,232,255,.8)"; ctx.lineWidth = 1.4; ctx.stroke();
-    ctx.strokeStyle = "rgba(255,255,255,.75)"; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(hx, hy, 12.5, 3.6, 4.4); ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,.75)"; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(hx, hy, 11, 3.6, 4.4); ctx.stroke();
     ctx.fillStyle = "#cfd3e6"; ctx.strokeStyle = "#3a3346"; ctx.lineWidth = 1.2;
-    ctx.beginPath(); ctx.ellipse(hx - 9, hy + 13, 9, 3.4, -.35, 0, 6.283); ctx.fill(); ctx.stroke();   // collare
+    ctx.beginPath(); ctx.ellipse(hx - 12.5, hy + 5.5, 3, 8.5, -.42, 0, 6.283); ctx.fill(); ctx.stroke();   // collare
     ctx.restore();
   }
   let lastS = 0;
@@ -766,6 +770,15 @@ html[data-cowgrab]{cursor:grab}
 .cowhelp .hx{position:absolute;right:16px;top:16px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line-2);background:var(--milk);font-size:20px;cursor:pointer;color:var(--ink-2)}
 @media (max-width:640px){.cowhelp .hgrid{grid-template-columns:1fr}.cowhelp .hhead{padding:20px 18px 16px;gap:12px}.cowhelp .hatom{width:58px;height:58px}.cowhelp h3{font-size:25px}.cowhelp .hi{height:76px}}`;
   document.head.append(css3);
+  // ritratto della mucca su una tela qualsiasi: Mimì (tema chiaro) o Mumù astronauta (tema scuro)
+  window.MILK_COW_PIC = (c, astro, k = 1) => {
+    const keep = ctx; ctx = c.getContext("2d");
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height);
+    const t = 1200;
+    if (astro) { ctx.translate(c.width / 2, c.height / 2); ctx.scale(k, k); drawAstro(t, 0, 0, -.18); }
+    else { ctx.translate(c.width / 2 - 4 * k, c.height * .86); ctx.scale(k, k); drawCow(t, { p: 0, walk: 0, crouch: 0, lie: 0, graze: 0, chew: 0, closed: 0, moo: 0 }, false); }
+    ctx = keep;
+  };
   tHelp.addEventListener("click", () => {
     helpBox.hidden = false;
     const c = helpBox.querySelector(".hcow"), keep = ctx; ctx = c.getContext("2d");
