@@ -349,7 +349,10 @@
         cow.jump = { t0: t - 180, dur: 1250, x0: cow.x, y0: ty, x1, to: h.roof, h: 110 + Math.abs(x1 - cow.x) * .25, hot: true };
         return;
       }
-      if (u >= 1 && j.hot) { EXC.t0 = t; EXC.dur = 500; }   // di nuovo a casa, ancora eccitata: un attimo e poi il fotone
+      if (j.hot && !j.home && !j.emitted && u >= .45) {   // scende verso lo stato di partenza: il fotone parte durante la discesa
+        j.emitted = true; const a = -Math.PI / 2 + (Math.random() - .5) * 2.2;
+        RAYS.push({ x, y: y - 26, vx: Math.cos(a), vy: Math.sin(a), sp: .4, t0: t, kind: "photon" });
+      }
       if (u >= 1) { cow.roof = j.to; cow.x = j.x1; cow.dead = after; cow.jump = null; Object.assign(pose, { crouch: 0, lie: 0, graze: 0, closed: 0 }); startStay(t); }
       return;
     }
@@ -510,27 +513,27 @@ ${open ? '<path d="M8 30l18-10h46l-18 10z" fill="#3a2c22"/><path d="M8 30L1 15h4
   // tiri l'elastico (trascini dall'icona) e lasci: parte un raggio gamma nella direzione opposta.
   // Se colpisce la mucca, la mucca si eccita (E₁ → E₂) e poco dopo torna allo stato fondamentale emettendo un fotone.
   const EXC = { t0: 0, dur: 2400 };
-  let SLING = null; const RAYS = [];
-  const slingSvg = `<svg viewBox="0 0 64 64"><path d="M22 58V36L10 14M42 58V36l12-22M22 36h20" fill="none" stroke="#6b4a2c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M10 14q22 22 44 0" fill="none" stroke="#7a4fd0" stroke-width="2"/><circle cx="32" cy="24" r="5" fill="#3fd18a" stroke="#1d1726" stroke-width="1.6"/>
-<text x="32" y="27" text-anchor="middle" font-family="Latin Modern,serif" font-style="italic" font-size="8" fill="#1d1726">γ</text></svg>`;
-  const BIG_SLING_SVG = `<svg viewBox="0 0 120 120" class="sbk"><defs>
-<linearGradient id="slw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a5a32"/><stop offset=".5" stop-color="#b98048"/><stop offset="1" stop-color="#7a4c28"/></linearGradient>
-<radialGradient id="slg" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#eafff4"/><stop offset=".45" stop-color="#3fd18a"/><stop offset="1" stop-color="#16804d"/></radialGradient></defs>
-<ellipse cx="60" cy="114" rx="22" ry="4" fill="#1d1726" opacity=".14"/>
-<path d="M54 112V74C54 66 50 58 42 50L22 26M66 112V74C66 66 70 58 78 50L98 26" fill="none" stroke="#2a2236" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M54 112V74C54 66 50 58 42 50L22 26M66 112V74C66 66 70 58 78 50L98 26" fill="none" stroke="url(#slw)" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M54 64C56 70 64 70 66 64" fill="url(#slw)"/><rect x="50" y="62" width="20" height="16" fill="url(#slw)"/>
-<path d="M45 52l-9-11M75 52l9-11" stroke="#e2b47c" stroke-width="1.4" stroke-linecap="round" opacity=".6"/>
-<g stroke="#2a2236" stroke-width="1.2"><rect x="49" y="82" width="22" height="26" rx="4" fill="#7a4fd0"/></g>
-<path d="M49 87h22M49 92h22M49 97h22M49 102h22" stroke="#5534a0" stroke-width="2"/>
-<circle cx="22" cy="26" r="4.5" fill="#2a2236"/><circle cx="98" cy="26" r="4.5" fill="#2a2236"/>
-<g class="rest"><path d="M22 26Q40 40 52 44M98 26Q80 40 68 44" fill="none" stroke="#db6a2c" stroke-width="2.6" stroke-linecap="round"/>
-<path d="M50 40Q60 50 70 40L70 48Q60 56 50 48Z" fill="#6b4a2c" stroke="#2a2236" stroke-width="1.4" stroke-linejoin="round"/>
-<circle cx="60" cy="42" r="7" fill="url(#slg)" stroke="#1d1726" stroke-width="1.2"/>
-<text x="60" y="45.6" text-anchor="middle" font-family="Latin Modern,serif" font-style="italic" font-size="10" fill="#0d3b26">γ</text></g></svg>`;
+  let SLING = null; const RAYS = [], FLASH = { t0: 0 };
+  // pietra di uranio: un sasso scuro con vene che brillano, il nucleo che decade emette i raggi gamma
+  const rockPath = "M18 78L10 58l8-22 20-12 26 2 20 14 6 24-10 18-22 8-30-4z";
+  const slingSvg = `<svg viewBox="0 0 100 100"><defs><radialGradient id="urg1" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="#5d6b4e"/><stop offset="1" stop-color="#262c22"/></radialGradient></defs>
+<path d="${rockPath}" fill="url(#urg1)" stroke="#1d1726" stroke-width="4" stroke-linejoin="round"/>
+<path d="M28 46l14 6 10-8M44 62l16-4 10 8M58 34l6 10" fill="none" stroke="#b8ff4a" stroke-width="5" stroke-linecap="round"/>
+<circle cx="50" cy="54" r="7" fill="#d9ff7a"/></svg>`;
+  const BIG_SLING_SVG = `<svg viewBox="0 0 120 120" class="sbk urock"><defs>
+<radialGradient id="urg" cx=".38" cy=".3" r=".8"><stop offset="0" stop-color="#6d7a5a"/><stop offset=".6" stop-color="#3a4232"/><stop offset="1" stop-color="#20251c"/></radialGradient>
+<radialGradient id="urh" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#c8ff5a" stop-opacity=".55"/><stop offset="1" stop-color="#c8ff5a" stop-opacity="0"/></radialGradient></defs>
+<circle class="uhalo" cx="60" cy="66" r="56" fill="url(#urh)"/>
+<ellipse cx="60" cy="112" rx="34" ry="5" fill="#1d1726" opacity=".16"/>
+<g transform="translate(6 12)">
+<path d="M22 86L12 62l10-28 24-16 32 2 24 18 6 30-12 22-28 10-36-4z" fill="url(#urg)" stroke="#1d1726" stroke-width="2.4" stroke-linejoin="round"/>
+<path d="M22 34l24 8 8 20M46 18l8 24 26 4M78 20l2 26 26 2M12 62l30-2 12 28M54 62l28 2 14 22" fill="none" stroke="#1d1726" stroke-width="1.2" opacity=".35"/>
+<g class="uvein" fill="none" stroke="#b8ff4a" stroke-linecap="round"><path d="M32 52l14 6 10-8 14 4" stroke-width="3"/><path d="M40 76l18-4 12 8" stroke-width="2.6"/><path d="M70 34l6 12-6 10" stroke-width="2.4"/></g>
+<circle class="unuc" cx="56" cy="58" r="6" fill="#e8ff9a"/>
+<text x="20" y="104" font-family="Latin Modern,Georgia,serif" font-size="13" fill="#efeaf8"><tspan font-size="8" dy="-5">238</tspan><tspan dy="5">U</tspan></text>
+</g></svg>`;
   const tSling = document.createElement("div"); tSling.className = "cowtool"; tSling.innerHTML = slingSvg;
-  tSling.title = "Fionda a raggi gamma: clic per prenderla, poi tendi l'elastico e lascia mirando alla mucca";
+  tSling.title = "Pietra di uranio: clic per prenderla, poi trascina verso la mucca e lascia: il nucleo decade ed emette un raggio gamma";
   dock.prepend(tSling);
   // la fionda grande, in basso al centro: si tende trascinando dal suo elastico
   const big = document.createElement("div"); big.className = "slingbig"; big.hidden = true;
@@ -538,7 +541,10 @@ ${open ? '<path d="M8 30l18-10h46l-18 10z" fill="#3a2c22"/><path d="M8 30L1 15h4
   document.body.append(big);
   const css2 = document.createElement("style");
   css2.textContent = `.slingbig{position:fixed;left:50%;bottom:18px;width:120px;height:120px;margin-left:-60px;z-index:72;touch-action:none;cursor:grab}
-.slingbig[hidden]{display:none}.slingbig svg{width:100%;height:100%;filter:drop-shadow(0 8px 14px rgba(29,23,38,.25))}.slingbig.pull .rest{display:none}
+.slingbig[hidden]{display:none}.slingbig svg{width:100%;height:100%;filter:drop-shadow(0 8px 14px rgba(29,23,38,.25))}
+.urock .uhalo{animation:uGlow 2.6s ease-in-out infinite}.urock .uvein{animation:uVein 2.6s ease-in-out infinite}.urock .unuc{animation:uNuc 1.3s ease-in-out infinite}
+.slingbig.pull .uhalo{animation-duration:.5s}
+@keyframes uGlow{50%{opacity:.45}}@keyframes uVein{50%{stroke:#7fd12a}}@keyframes uNuc{50%{r:4.5;fill:#b8ff4a}}
 .cowtool.on{background:var(--ink)!important}.cowtool.on svg path{stroke:#f6f1e8}
 :root[data-theme="dark"] .slingbig,html.noanim .slingbig{display:none!important}`;
   document.head.append(css2);
@@ -547,13 +553,13 @@ ${open ? '<path d="M8 30l18-10h46l-18 10z" fill="#3a2c22"/><path d="M8 30L1 15h4
     e.preventDefault();
     const b = big.getBoundingClientRect();
     const k = b.width / 120;
-    SLING = { ax: b.left + 60 * k, ay: b.top + 44 * k, lx: b.left + 22 * k, rx: b.left + 98 * k, ty: b.top + 26 * k, px: e.clientX, py: e.clientY };
+    SLING = { ax: b.left + 62 * k, ay: b.top + 70 * k, px: e.clientX, py: e.clientY };
     big.classList.add("pull");
     const move = ev => { SLING.px = ev.clientX; SLING.py = ev.clientY; };
     const up = () => {
       removeEventListener("pointermove", move); removeEventListener("pointerup", up);
-      const dx = SLING.ax - SLING.px, dy = SLING.ay - SLING.py, d = Math.hypot(dx, dy);
-      if (d > 12) RAYS.push({ x: SLING.ax, y: SLING.ay, vx: dx / d, vy: dy / d, sp: .35 + Math.min(1, d / 160) * .9, t0: performance.now(), kind: "gamma" });
+      const dx = SLING.px - SLING.ax, dy = SLING.py - SLING.ay, d = Math.hypot(dx, dy);
+      if (d > 12) { RAYS.push({ x: SLING.ax, y: SLING.ay, vx: dx / d, vy: dy / d, sp: 1.05, t0: performance.now(), kind: "gamma" }); FLASH.t0 = performance.now(); }
       SLING = null; big.classList.remove("pull");
     };
     addEventListener("pointermove", move); addEventListener("pointerup", up);
@@ -570,16 +576,19 @@ ${open ? '<path d="M8 30l18-10h46l-18 10z" fill="#3a2c22"/><path d="M8 30L1 15h4
   let lastG = 0;
   function drawGadgets(t) {
     const dt = Math.min(80, t - (lastG || t)); lastG = t;
-    if (SLING) {                                            // elastico tirato e la mira
-      const { ax, ay, px, py } = SLING, lx = SLING.lx ?? ax - 14, rx = SLING.rx ?? ax + 14, ty = SLING.ty ?? ay + 4;
-      ctx.save(); ctx.strokeStyle = "#db6a2c"; ctx.lineWidth = 2.6; ctx.lineCap = "round";
-      ctx.beginPath(); ctx.moveTo(lx, ty); ctx.lineTo(px - 6, py); ctx.moveTo(rx, ty); ctx.lineTo(px + 6, py); ctx.stroke();
-      ctx.fillStyle = "#6b4a2c"; ctx.beginPath(); ctx.ellipse(px, py + 2, 10, 6, 0, 0, 6.283); ctx.fill();
-      const og = ctx.createRadialGradient(px - 2, py - 3, 1, px, py, 8); og.addColorStop(0, "#eafff4"); og.addColorStop(.45, "#3fd18a"); og.addColorStop(1, "#16804d");
-      ctx.shadowColor = "#3fd18a"; ctx.shadowBlur = 12; ctx.fillStyle = og; ctx.beginPath(); ctx.arc(px, py - 1, 7, 0, 6.283); ctx.fill(); ctx.shadowBlur = 0;
-      const dx = ax - px, dy = ay - py, d = Math.hypot(dx, dy) || 1;
-      ctx.setLineDash([3, 7]); ctx.strokeStyle = "rgba(63,209,138,.7)"; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax + dx / d * 260, ay + dy / d * 260); ctx.stroke();
-      ctx.setLineDash([]); ctx.restore();
+    if (SLING) {                                            // mira: dalla pietra verso il dito
+      const { ax, ay, px, py } = SLING, dx = px - ax, dy = py - ay, d = Math.hypot(dx, dy) || 1;
+      ctx.save(); ctx.setLineDash([3, 7]); ctx.strokeStyle = "rgba(127,209,42,.85)"; ctx.lineWidth = 2; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax + dx / d * Math.max(d, 260), ay + dy / d * Math.max(d, 260)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle = "rgba(127,209,42,.6)"; ctx.beginPath(); ctx.arc(px, py, 9 + 2 * Math.sin(t * .01), 0, 6.283); ctx.stroke();
+      ctx.restore();
+    }
+    if (FLASH.t0 && t - FLASH.t0 < 500) {                   // decadimento: lampo e frammenti dal nucleo
+      const u = (t - FLASH.t0) / 500, b = big.getBoundingClientRect(), k = b.width / 120, x = b.left + 62 * k, y = b.top + 70 * k;
+      ctx.save(); ctx.globalAlpha = 1 - u; ctx.fillStyle = "#d9ff7a";
+      ctx.beginPath(); ctx.arc(x, y, 6 + u * 26, 0, 6.283); ctx.fill();
+      for (let q = 0; q < 6; q++) { const a = q * 1.047 + .3; ctx.beginPath(); ctx.arc(x + Math.cos(a) * u * 46, y + Math.sin(a) * u * 46, 2.2, 0, 6.283); ctx.fill(); }
+      ctx.restore();
     }
     const c = window.MILK_COW;
     for (let i = RAYS.length - 1; i >= 0; i--) {
@@ -672,7 +681,7 @@ ${open ? '<path d="M8 30l18-10h46l-18 10z" fill="#3a2c22"/><path d="M8 30L1 15h4
   let DRAG = null;
   addEventListener("pointerdown", e => {
     const c = window.MILK_COW;
-    if (!light() || off() || !c || cow.jump || BOX.state !== "out" || BOX.anim || SLING) return;
+    if (true || !light() || off() || !c || cow.jump || BOX.state !== "out" || BOX.anim || SLING) return;   // nel tema chiaro la mucca non si trascina
     if (e.target.closest && e.target.closest(".cowdock,.slingbig,.cowhelp,button,a,input")) return;
     if (Math.hypot(e.clientX - c.x, e.clientY - (c.y - 22)) > (e.pointerType === "touch" ? 50 : 34)) return;
     e.preventDefault(); e.stopPropagation();
@@ -703,7 +712,7 @@ ${open ? '<path d="M8 30l18-10h46l-18 10z" fill="#3a2c22"/><path d="M8 30L1 15h4
   }, true);
   addEventListener("pointermove", e => {
     const c = window.MILK_COW;
-    if (!light() || !c || DRAG) return;
+    if (true || !light() || !c || DRAG) return;
     const near = Math.hypot(e.clientX - c.x, e.clientY - (c.y - 22)) < 34;
     if (near !== !!document.documentElement.dataset.cowgrab) { if (near) document.documentElement.dataset.cowgrab = 1; else delete document.documentElement.dataset.cowgrab; }
   }, { passive: true });
@@ -712,7 +721,7 @@ ${open ? '<path d="M8 30l18-10h46l-18 10z" fill="#3a2c22"/><path d="M8 30L1 15h4
   addEventListener("touchstart", e => {
     if (off() || e.touches.length !== 1) return;
     const x = e.touches[0].clientX, y = e.touches[0].clientY, c = window.MILK_COW;
-    const near = light() ? c && Math.hypot(x - c.x, y - (c.y - 22)) < 50 : AST.init && Math.hypot(x - AST.x, y - AST.y) < 60;
+    const near = !light() && AST.init && Math.hypot(x - AST.x, y - AST.y) < 60;
     if (near) e.preventDefault();
   }, { capture: true, passive: false });
   addEventListener("touchmove", e => { if (DRAG || AST.drag) e.preventDefault(); }, { capture: true, passive: false });
@@ -728,11 +737,11 @@ ${open ? '<path d="M8 30l18-10h46l-18 10z" fill="#3a2c22"/><path d="M8 30L1 15h4
     <div class="hhead"><svg class="hatom" viewBox="0 0 120 120" aria-hidden="true">
       <g fill="none" stroke-width="1.4"><ellipse cx="60" cy="60" rx="54" ry="18" stroke="#7a4fd0" opacity=".55"/><ellipse cx="60" cy="60" rx="54" ry="18" stroke="#db6a2c" opacity=".55" transform="rotate(60 60 60)"/><ellipse cx="60" cy="60" rx="54" ry="18" stroke="#7a4fd0" opacity=".55" transform="rotate(-60 60 60)"/></g>
       <circle cx="60" cy="60" r="9" fill="#db6a2c"/><circle cx="56" cy="57" r="4" fill="#7a4fd0"/><circle cx="114" cy="60" r="4" fill="#7a4fd0"/><circle cx="33" cy="13" r="4" fill="#db6a2c"/></svg>
-      <div><div class="hkick">MILKeX · laboratorio</div><h3>La mucca di Schrödinger</h3><p class="hs">Quattro esperimenti di meccanica quantistica da fare tra un capitolo e l'altro.</p></div>
+      <div><div class="hkick">MILKeX · laboratorio</div><h3>Il laboratorio di Mimì</h3><p class="hs">Quattro esperimenti di meccanica quantistica da fare tra un capitolo e l'altro.</p></div>
       <button class="hx" aria-label="Chiudi">×</button></div>
     <div class="hgrid">
-    ${row('<canvas class="hcow" width="320" height="240"></canvas>', "La mucca", "Cammina sui progetti e si riposa sugli orbitali. <b>Prendila e trascinala</b> su un altro orbitale: la porti in uno stato eccitato, lei torna da sola allo stato di partenza ed <b>emette un fotone</b>.", "E₂ → E₁ + ħω", "#7a4fd0")}
-    ${row(BIG_SLING_SVG, "Fionda a raggi gamma", "Clic sull'icona: compare la fionda in basso al centro. <b>Tendi l'elastico</b>, mira alla mucca e lascia. Colpita, salta eccitata su un altro orbitale, torna indietro ed emette un fotone.", "E = hν", "#3fb87a")}
+    ${row('<canvas class="hcow" width="320" height="240"></canvas>', "La mucca", "Cammina sui progetti e si riposa sugli orbitali. Colpita dai raggi gamma passa in uno stato eccitato su un altro orbitale, poi torna da sola a quello di partenza ed <b>emette un fotone mentre scende</b>.", "E₂ → E₁ + ħω", "#7a4fd0")}
+    ${row(BIG_SLING_SVG.replace(/id="ur([gh])"/g, 'id="urH$1"').replace(/url\(#ur([gh])\)/g, "url(#urH$1)"), "Pietra di uranio", "Clic sull'icona: compare la pietra in basso al centro. <b>Trascina verso la mucca</b> e lascia: un nucleo decade ed emette un raggio gamma. Colpita, salta eccitata su un altro orbitale, torna indietro ed emette un fotone.", "E = hν", "#3fb87a")}
     ${row(boxSvg(true), "Scatola di Schrödinger", "<b>Trascinala sulla mucca</b> per chiuderla dentro: così non disturba mentre studi. Un clic sulla scatola la apre e la mucca esce.", "|ψ⟩ = α|viva⟩ + β|morta⟩", "#b98048")}
     ${row(scanSvg, "Scanner a raggi X", "Compare quando la mucca è nella scatola. <b>Passalo sopra</b>: vedi dentro solo la parte che copri. Ogni passaggio è una nuova misura: viva o morta, 50% e 50%.", "|α|² = |β|² = ½", "#47c6d6")}
     </div>
@@ -787,6 +796,46 @@ html[data-cowgrab]{cursor:grab}
     ctx = keep;
   });
   helpBox.addEventListener("click", e => { if (e.target === helpBox || e.target.closest(".hx")) helpBox.hidden = true; });
+
+  // ================== guida del tema scuro: Mumù nello spazio ==================
+  const qDark = document.createElement("div"); qDark.className = "cowtool cowq qdark"; qDark.title = "Come si gioca con Mumù";
+  qDark.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="#c4a8ff" stroke-width="1.8"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1.9-1.1 1.8M12 16.6v.2" fill="none" stroke="#c4a8ff" stroke-width="1.8" stroke-linecap="round"/></svg>';
+  document.body.append(qDark);
+  if (window.MX_PLAYGROUND) qDark.style.display = "none";
+  const darkBox = document.createElement("div"); darkBox.className = "cowhelp hdark"; darkBox.hidden = true;
+  const GAL = '<svg viewBox="0 0 120 120"><g transform="translate(60 60)"><ellipse rx="44" ry="15" fill="none" stroke="#c4a8ff" stroke-width="2" opacity=".5" transform="rotate(-20)"/><ellipse rx="30" ry="9" fill="none" stroke="#ffb889" stroke-width="2" opacity=".6" transform="rotate(-20)"/><circle r="8" fill="#fff4e6"/><circle r="16" fill="#ffd9b8" opacity=".25"/></g><circle cx="16" cy="20" r="1.5" fill="#fff"/><circle cx="100" cy="98" r="1.2" fill="#fff"/><circle cx="96" cy="18" r="1" fill="#d9ccff"/></svg>';
+  const SHIP = '<svg viewBox="0 0 120 120"><path d="M42 112l12-30h12l12 30z" fill="#f2914f" opacity=".25"/><circle cx="60" cy="56" r="16" fill="rgba(188,212,255,.18)" stroke="#dce8ff" stroke-width="2"/><circle cx="60" cy="58" r="9" fill="#fbf7ef"/><ellipse cx="60" cy="62" rx="5" ry="3.4" fill="#f0b3bd"/><circle cx="56.5" cy="55" r="1.6" fill="#1d1726"/><circle cx="63.5" cy="55" r="1.6" fill="#1d1726"/><ellipse cx="60" cy="74" rx="34" ry="10" fill="#2a2140" stroke="#c4a8ff" stroke-width="2"/><circle cx="42" cy="75" r="2.6" fill="#f2914f"/><circle cx="60" cy="77" r="2.6" fill="#f2914f"/><circle cx="78" cy="75" r="2.6" fill="#f2914f"/></svg>';
+  darkBox.innerHTML = `<div class="hc">
+    <div class="hhead"><svg class="hatom" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="10" fill="#fff4e6"/><circle cx="60" cy="60" r="26" fill="#ffd9b8" opacity=".14"/>
+      <ellipse cx="60" cy="60" rx="52" ry="16" fill="none" stroke="#c4a8ff" stroke-width="1.4" opacity=".6" transform="rotate(-20 60 60)"/><circle cx="20" cy="22" r="2" fill="#fff"/><circle cx="102" cy="96" r="1.6" fill="#fff"/></svg>
+      <div><div class="hkick">MILKeX · spazio</div><h3>Mumù nel mondo astronomico</h3><p class="hs">Nel tema scuro la mucca fluttua senza gravità tra galassie e nebulose.</p></div>
+      <button class="hx" aria-label="Chiudi">×</button></div>
+    <div class="hgrid">
+    ${row('<canvas class="hcow" width="320" height="240"></canvas>', "Mumù astronauta", "<b>Prendila e lanciala</b> col mouse o col dito: vola nella direzione in cui la lasci e rimbalza piano sui bordi dello schermo.", "p = m v", "#c4a8ff")}
+    ${row(GAL, "Gravità delle galassie", "Se passa vicino a una galassia o a una nebulosa, <b>la gravità la attira</b>: può entrare in orbita e girarci intorno.", "F = G m M / r²", "#ffb889")}
+    ${row(SHIP, "Nightmare before the exam", "Il pulsante con l'astronave apre il minigioco: <b>difendi Mumù</b> dai concetti che fanno paura, raccogli gli aiuti ed entra in classifica.", "♥ ♥ ♥", "#f2914f")}
+    </div>
+    <div class="hfoot">Le animazioni si regolano con il cursore <b>Prestazioni ↔ Qualità</b> nella barra laterale.</div>
+  </div>`;
+  document.body.append(darkBox);
+  const css4 = document.createElement("style");
+  css4.textContent = `.qdark{position:fixed;right:22px;bottom:92px;z-index:70;background:#1a1529!important;border-color:rgba(239,234,248,.14)!important}
+:root:not([data-theme="dark"]) .qdark,html.noanim .qdark,html.mxplaying .qdark{display:none!important}
+@media (max-width:699px){.qdark{right:12px;bottom:calc(64px + env(safe-area-inset-bottom))}}
+.hdark .hc{background:#171226;border-color:rgba(239,234,248,.12);background-image:none}
+.hdark h3,.hdark b{color:#efeaf8}.hdark .hs,.hdark .hr p,.hdark .hfoot{color:#b5aacb}
+.hdark .hr{background:#1d1730;border-color:rgba(239,234,248,.1)}.hdark .hi{background:#120d20}.hdark .hhead{border-color:rgba(239,234,248,.14)}
+.hdark .hx{background:#1d1730;color:#efeaf8;border-color:rgba(239,234,248,.2)}`;
+  document.head.append(css4);
+  qDark.addEventListener("click", () => {
+    darkBox.hidden = false;
+    const c = darkBox.querySelector(".hcow"), keep = ctx; ctx = c.getContext("2d");
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, 320, 240); ctx.translate(150, 130); ctx.scale(3.6, 3.6);
+    drawAstro(1200, 0, 0, -.18);
+    ctx = keep;
+  });
+  darkBox.addEventListener("click", e => { if (e.target === darkBox || e.target.closest(".hx")) darkBox.hidden = true; });
+  if (window.MX_PLAYGROUND) setInterval(() => { qDark.style.display = MX_PLAYGROUND() ? "" : "none"; }, 400);
   if (BOX.state === "closing") BOX.state = "boxed";
   paintTools();
   requestAnimationFrame(frame);

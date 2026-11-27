@@ -673,7 +673,7 @@ function gamesScreen() {
     h("div", { class: "bar" }, h("button", { class: "round", "aria-label": "Indietro", onclick: () => history.back() }, backIcon()), h("h1", {}, "Giochi", h("small", {}, "per le pause dallo studio"))),
     h("div", { class: "scroll" }, h("div", { class: "wrapc gwrap" },
       card("glab", "Mimì e Mumù nel mondo della fisica", "laboratorio",
-        () => dark() ? "Nel mondo astronomico c'è Mumù: fluttua nello spazio, lanciala e la gravità delle galassie la attira. Col tema chiaro trovi Mimì." : "Nel mondo quantistico c'è Mimì: fionda a raggi gamma, scatola e scanner a raggi X. Col tema scuro trovi Mumù nello spazio.",
+        () => dark() ? "Nel mondo astronomico c'è Mumù: fluttua nello spazio, lanciala e la gravità delle galassie la attira. Col tema chiaro trovi Mimì." : "Nel mondo quantistico c'è Mimì: pietra di uranio che emette raggi gamma, scatola e scanner a raggi X. Col tema scuro trovi Mumù nello spazio.",
         () => go(labScreen), labArt(), true),
       card("gnight", "Nightmare before the exam", "minigioco", "La notte prima dell'esame i concetti che fanno paura attaccano. Difendi la mucca, raccogli gli aiuti, entra in classifica.",
         () => window.MX_GAME_OPEN && window.MX_GAME_OPEN(), nightArt()))));

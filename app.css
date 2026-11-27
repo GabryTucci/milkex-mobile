@@ -309,3 +309,34 @@ html.mxplaying .gamebtn{display:grid!important}
 
 .gpic{position:relative;overflow:hidden}.gpic .gcow{position:absolute;width:62%;height:62%;pointer-events:none}
 .gpic .gcow.big{width:80%;height:80%}
+
+/* ---- passaggio tra le pagine: velo veloce nello stile del tema ---- */
+#navq{position:fixed;inset:0;z-index:6000;display:grid;place-items:center;pointer-events:none;opacity:0;transition:opacity .14s ease;
+  background:radial-gradient(ellipse 60% 45% at 80% 0%,rgba(122,79,208,.07),transparent 70%),var(--bg);
+  background-image:linear-gradient(var(--grid-1,rgba(29,23,38,.05)) 1px,transparent 1px),linear-gradient(90deg,var(--grid-1,rgba(29,23,38,.05)) 1px,transparent 1px);background-size:24px 24px}
+:root[data-theme="dark"] #navq{background:radial-gradient(1px 1px at 20% 30%,#fff8,transparent),radial-gradient(1px 1px at 70% 20%,#fff6,transparent),radial-gradient(1.4px 1.4px at 40% 75%,#d9ccff99,transparent),radial-gradient(1px 1px at 85% 65%,#fff5,transparent),radial-gradient(ellipse 60% 40% at 70% 0%,rgba(122,79,208,.18),transparent 70%),#100c1b}
+#navq.on{opacity:1}#navq.now{transition:none}
+#navq.out{opacity:0;transition:opacity .24s ease}
+html.nav-cover:not(:has(#navq)) body{visibility:hidden}
+html.nav-cover body>#navq{visibility:visible}
+#navq .nq{position:relative;width:64px;height:64px}
+/* chiaro: atomo con due orbite inclinate */
+#navq .nq .orb{position:absolute;left:50%;top:50%;width:0;height:0}
+#navq .nq .orb::before{content:"";position:absolute;left:-32px;top:-12.2px;width:64px;height:24.4px;border:1.5px solid rgba(122,79,208,.45);border-radius:50%;box-sizing:border-box}
+#navq .nq .orb.b::before{border-color:rgba(240,136,74,.5)}
+#navq .nq .orb.a{transform:rotate(30deg)}#navq .nq .orb.b{transform:rotate(-30deg)}
+#navq .nq .orb span{position:absolute;left:-3.5px;top:-3.5px;width:7px;height:7px;border-radius:50%;background:#7b4fd6;will-change:transform;animation:nqOrb .8s linear infinite}
+#navq .nq .orb.b span{background:#f0884a;animation-delay:-.4s}
+#navq .nq b{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px;border-radius:50%;background:var(--ink)}
+@keyframes nqOrb{0.00%{transform:translate(32.00px,0.00px)}6.25%{transform:translate(29.56px,4.67px)}12.50%{transform:translate(22.63px,8.63px)}18.75%{transform:translate(12.25px,11.27px)}25.00%{transform:translate(0.00px,12.20px)}31.25%{transform:translate(-12.25px,11.27px)}37.50%{transform:translate(-22.63px,8.63px)}43.75%{transform:translate(-29.56px,4.67px)}50.00%{transform:translate(-32.00px,0.00px)}56.25%{transform:translate(-29.56px,-4.67px)}62.50%{transform:translate(-22.63px,-8.63px)}68.75%{transform:translate(-12.25px,-11.27px)}75.00%{transform:translate(-0.00px,-12.20px)}81.25%{transform:translate(12.25px,-11.27px)}87.50%{transform:translate(22.63px,-8.63px)}93.75%{transform:translate(29.56px,-4.67px)}100.00%{transform:translate(32.00px,-0.00px)}}
+/* scuro: piccolo sistema solare visto dall'alto */
+#navq .ss{display:none;position:relative;width:96px;height:96px}
+:root[data-theme="dark"] #navq .nq{display:none}:root[data-theme="dark"] #navq .ss{display:block}
+#navq .ss .sun{position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px;border-radius:50%;background:radial-gradient(circle at 40% 40%,#fff8e6,#ffb889 60%,#f0884a);box-shadow:0 0 18px 5px rgba(255,184,137,.55)}
+#navq .ss .o{position:absolute;left:50%;top:50%;border:1px solid rgba(239,234,248,.12);border-radius:50%;will-change:transform;animation:ssRot linear infinite}
+#navq .ss .o i{position:absolute;left:50%;top:-3px;width:6px;height:6px;margin-left:-3px;border-radius:50%}
+#navq .ss .o1{width:36px;height:36px;margin:-18px;animation-duration:.9s}#navq .ss .o1 i{background:#c4a8ff;width:5px;height:5px;margin-left:-2.5px;top:-2.5px}
+#navq .ss .o2{width:62px;height:62px;margin:-31px;animation-duration:1.5s}#navq .ss .o2 i{background:#bcd4ff;box-shadow:0 0 6px #bcd4ff}
+#navq .ss .o3{width:92px;height:92px;margin:-46px;animation-duration:2.4s}#navq .ss .o3 i{background:#f2914f;width:8px;height:8px;margin-left:-4px;top:-4px;box-shadow:0 0 0 2.5px rgba(242,145,79,.25)}
+@keyframes ssRot{to{transform:rotate(360deg)}}
+html.noanim #navq span,html.noanim #navq .o{animation:none!important}

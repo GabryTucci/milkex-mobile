@@ -17,6 +17,7 @@ html.mxplaying .gamebtn{display:grid!important;z-index:8100}
 @media (max-width:699px){.gamebtn{right:12px;bottom:calc(12px + env(safe-area-inset-bottom));width:48px;height:44px;border-radius:14px}.gamebtn svg{width:32px;height:28px}}
 .mxgame{position:fixed;inset:0;z-index:8000;background:#0b0814;touch-action:none;cursor:crosshair}
 .mxgame[hidden]{display:none}
+#navq.mxveil{z-index:8200}
 .mxgame canvas{position:absolute;inset:0;width:100%;height:100%}
 .mxhud{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;padding:14px 22px;color:#efeaf8;
   font-family:"Geist Mono",ui-monospace,monospace;font-size:14px;pointer-events:none}
@@ -359,11 +360,24 @@ html.mxplaying .gamebtn{display:grid!important;z-index:8100}
   // MILKeX Mobile: il gioco parte dalla sezione Giochi; il pulsante serve solo per uscire
   if (window.MX_PLAYGROUND) setInterval(() => { btn.style.display = box.hidden ? "none" : ""; }, 400);
   window.MX_GAME_OPEN = () => { if (box.hidden) btn.click(); };
+  // apertura e chiusura con il velo dei cambi di schermata: atomo (tema chiaro) o pianeti attorno al sole (tema scuro)
+  let busy = false;
+  const veil = swap => {
+    const v = document.createElement("div"); v.id = "navq"; v.className = "mxveil";
+    v.innerHTML = '<div class="nq"><div class="orb a"><span></span></div><div class="orb b"><span></span></div><b></b></div>' +
+      '<div class="ss"><div class="sun"></div><div class="o o1"><i></i></div><div class="o o2"><i></i></div><div class="o o3"><i></i></div></div>';
+    document.body.append(v); busy = true;
+    void v.offsetWidth; v.classList.add("on");
+    setTimeout(() => { swap(); setTimeout(() => { v.classList.add("out"); setTimeout(() => { v.remove(); busy = false; }, 260); }, 380); }, 160);
+  };
   btn.onclick = () => {
+    if (busy) return;
     const open = box.hidden;
-    box.hidden = !open; btn.classList.toggle("on", open); document.documentElement.classList.toggle("mxplaying", open);
-    document.documentElement.style.overflow = open ? "hidden" : "";
-    if (open) { size(); newGame(); G.over = true; start(); requestAnimationFrame(frame); }
+    btn.classList.toggle("on", open); document.documentElement.classList.toggle("mxplaying", open);
+    veil(() => {
+      box.hidden = !open; document.documentElement.style.overflow = open ? "hidden" : "";
+      if (open) { size(); newGame(); G.over = true; start(); requestAnimationFrame(frame); }
+    });
   };
   addEventListener("keydown", e => {
     if (box.hidden || !G) return;
