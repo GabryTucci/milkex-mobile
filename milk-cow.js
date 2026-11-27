@@ -271,7 +271,7 @@
     requestAnimationFrame(frame);
     if (window.MX_PLAYGROUND) { const on = MX_PLAYGROUND(); dock.style.display = on ? "" : "none"; if (!on) { big.hidden = true; tSling.classList.remove("on"); } }
     const ok = cowFrame(t);
-    if (ok !== false && !off()) { if (light()) drawGadgets(t); else spaceCow(t); }
+    if (ok !== false && !off() && !(window.MX_PLAYGROUND && !window.MX_PLAYGROUND())) { if (light()) drawGadgets(t); else spaceCow(t); }
   }
   function cowFrame(t) {
     if (t - last < (document.hasFocus() ? 41 : 100)) return false;
