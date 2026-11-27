@@ -634,3 +634,7 @@ async function start() {
   // tornando sull'app aggiorna l'elenco
   document.addEventListener("visibilitychange", () => { if (!document.hidden && current?.refresh) current.refresh(); });
 })();
+
+// giochi della mucca: solo nell'elenco dei progetti (non mentre si legge un PDF)
+window.MX_PLAYGROUND = () => !!(current && current.querySelector(".search"));
+window.MX_GH_TOKEN = () => token();
