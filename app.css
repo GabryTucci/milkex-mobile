@@ -297,3 +297,6 @@ body{background:
 .gtx p{margin:0;font-size:.85rem;line-height:1.4;color:var(--mut)}
 .screen.lab{background:transparent!important}
 .labhint{position:absolute;left:0;right:0;bottom:calc(var(--bot) + 84px);text-align:center;font-family:"Geist Mono",monospace;font-size:.75rem;color:var(--mut);pointer-events:none}
+
+.milkcat{position:fixed;inset:0;width:100vw;height:100vh;z-index:60;pointer-events:none}
+html,body{overflow-x:hidden}

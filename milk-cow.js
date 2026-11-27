@@ -7,7 +7,7 @@
    così i passaggi (sdraiata → in piedi → salto) sono continui. */
 (() => {
   const cv = document.createElement("canvas");
-  cv.className = "milkcat";
+  cv.className = "milkcat"; cv.style.cssText = "position:fixed;inset:0;width:100vw;height:100vh;z-index:60;pointer-events:none";
   cv.setAttribute("aria-hidden", "true");
   document.body.append(cv);
   let ctx = cv.getContext("2d");
