@@ -282,3 +282,18 @@ body{background:
 #appupd b{font-family:"Geist Mono",monospace;font-weight:500;color:var(--orange-500)}
 #appupd button{flex:none;background:var(--orange-500);color:#1d1222;border-radius:999px;padding:.55rem 1rem;font-weight:600}
 :root[data-theme="light"] #appupd button{color:#fff}
+
+/* sezione Giochi */
+.gwrap{display:flex;flex-direction:column;gap:14px}
+.gcard{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:center;text-align:left;padding:14px;border-radius:22px;background:var(--glass);border:1px solid var(--line);box-shadow:var(--sh-1);color:var(--ink)}
+.gcard:active{transform:scale(.98)}
+.gpic{width:96px;height:96px;border-radius:18px;background-size:cover;background-position:center}
+.glab .gpic{background:radial-gradient(circle at 50% 55%,#db6a2c 0 7px,transparent 8px),radial-gradient(ellipse 46px 15px at 50% 55%,transparent 44px,#7a4fd0 45px 46px,transparent 47px),
+  linear-gradient(rgba(29,23,38,.06) 1px,transparent 1px) 0 0/12px 12px,linear-gradient(90deg,rgba(29,23,38,.06) 1px,transparent 1px) 0 0/12px 12px,#f6f1e8}
+.gnight .gpic{background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(200,36,60,.45),transparent 70%),#140c1c;position:relative}
+.gnight .gpic::after{content:"N";position:absolute;inset:0;display:grid;place-items:center;font-family:"UnifrakturMaguntia","Old English Text MT",serif;font-size:56px;color:#f3e7d8;text-shadow:0 0 14px rgba(255,60,80,.7)}
+.gtx small{font-family:"Geist Mono",monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--orange-500)}
+.gtx b{display:block;font-family:"Latin Modern",Georgia,serif;font-weight:400;font-size:1.3rem;margin:2px 0 4px}
+.gtx p{margin:0;font-size:.85rem;line-height:1.4;color:var(--mut)}
+.screen.lab{background:transparent!important}
+.labhint{position:absolute;left:0;right:0;bottom:calc(var(--bot) + 84px);text-align:center;font-family:"Geist Mono",monospace;font-size:.75rem;color:var(--mut);pointer-events:none}

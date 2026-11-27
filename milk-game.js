@@ -13,6 +13,7 @@
 .gamebtn:hover{transform:translateY(-2px)}.gamebtn svg{width:42px;height:36px}
 .gamebtn.on{background:#f2914f}
 :root:not([data-theme="dark"]) .gamebtn,html.noanim .gamebtn{display:none}
+html.mxplaying .gamebtn{display:grid!important;z-index:8100}
 @media (max-width:699px){.gamebtn{right:12px;bottom:calc(12px + env(safe-area-inset-bottom));width:48px;height:44px;border-radius:14px}.gamebtn svg{width:32px;height:28px}}
 .mxgame{position:fixed;inset:0;z-index:8000;background:#0b0814;touch-action:none;cursor:crosshair}
 .mxgame[hidden]{display:none}
@@ -335,10 +336,12 @@
     const tick = () => { const c = over.querySelector("#gClock"); if (!c) return clearInterval(clockT); const d = new Date(); c.textContent = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
     clearInterval(clockT); clockT = setInterval(tick, 1000); tick();
   }
-  setInterval(() => { btn.style.display = window.MX_PLAYGROUND && !window.MX_PLAYGROUND() && box.hidden ? "none" : ""; }, 500);
+  // MILKeX Mobile: il gioco parte dalla sezione Giochi; il pulsante serve solo per uscire
+  if (window.MX_PLAYGROUND) setInterval(() => { btn.style.display = box.hidden ? "none" : ""; }, 400);
+  window.MX_GAME_OPEN = () => { if (box.hidden) btn.click(); };
   btn.onclick = () => {
     const open = box.hidden;
-    box.hidden = !open; btn.classList.toggle("on", open);
+    box.hidden = !open; btn.classList.toggle("on", open); document.documentElement.classList.toggle("mxplaying", open);
     document.documentElement.style.overflow = open ? "hidden" : "";
     if (open) { size(); newGame(); G.over = true; start(); requestAnimationFrame(frame); }
   };

@@ -414,10 +414,15 @@
     dark() ? drawSpace(t) : drawQuantum(t);
   }
   let last = 0;
-  let drawnStill = "";
+  let drawnStill = "", cleared = false;
   function loop(t) {
     requestAnimationFrame(loop);
     const RC = document.documentElement.classList;
+    if (window.MX_PLAYGROUND && !window.MX_PLAYGROUND()) {        // MILKeX Mobile fuori dai giochi: tela vuota, nessun calcolo
+      if (!cleared) { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height); cleared = true; }
+      return;
+    }
+    cleared = false;
     still = reduced || RC.contains("noanim") || RC.contains("bgstill") || (window.MX_PLAYGROUND && !window.MX_PLAYGROUND());
     if (still) { const k = document.documentElement.dataset.theme + W + "x" + H; if (k === drawnStill) return; drawnStill = k; frame(0); return; }
     drawnStill = "";

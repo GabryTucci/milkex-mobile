@@ -177,7 +177,7 @@ function sheet(title, text, buttons) {
     const back = h("div", { class: "sheet-back" }), sh = h("div", { class: "sheet" });
     const close = v => { sh.classList.add("out"); back.classList.add("out"); setTimeout(() => { sh.remove(); back.remove(); }, 280); res(v); };
     back.onclick = () => close(null);
-    sh.append(h("div", { class: "grab" }), h("h3", {}, title), typeof text === "string" ? h("p", {}, text) : text,
+    sh.append(h("div", { class: "grab" }), h("h3", {}, title), typeof text === "string" ? h("p", {}, typeof text === "function" ? text() : text) : text,
       h("div", { class: "row" }, buttons.map(b => h("button", { class: "cta" + (b.ghost ? " ghost" : ""), onclick: () => close(b.value) }, b.label))));
     document.body.append(back, sh);
   });
@@ -259,7 +259,7 @@ function homeScreen() {
     draw();
   };
   const scr = h("div", { class: "screen" },
-    h("div", { class: "bar" }, logo("mini"), h("h1", {}, "Progetti", h("small", {}, "MILKeX Mobile")), themeButton(), refreshBtn,
+    h("div", { class: "bar" }, logo("mini"), h("h1", {}, "Progetti", h("small", {}, "MILKeX Mobile")), h("button", { class: "round", "aria-label": "Giochi", title: "Giochi", onclick: () => go(gamesScreen) }, gameIcon()), themeButton(), refreshBtn,
       me.avatar ? h("img", { class: "avatar", src: me.avatar, alt: "", onclick: () => accountSheet() }) : null),
     h("div", { class: "scroll" }, h("div", { class: "wrapc" }, h("div", { class: "search" }, icon("search"), q), list)));
   draw(); load();
@@ -636,7 +636,7 @@ async function start() {
 })();
 
 // giochi della mucca: solo nell'elenco dei progetti (non mentre si legge un PDF)
-window.MX_PLAYGROUND = () => !!(current && current.querySelector(".search"));
+window.MX_PLAYGROUND = () => !!(current && current.classList.contains("lab"));
 window.MX_GH_TOKEN = () => token();
 
 // ---------- nuova versione dell'app: si aggiorna con un tocco, il collegamento resta salvato
@@ -659,3 +659,28 @@ async function checkAppUpdate() {
 }
 setTimeout(checkAppUpdate, 2500);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) checkAppUpdate(); });
+
+// ---------- sezione Giochi: il laboratorio della mucca e Nightmare before the exam
+function gameIcon() {
+  const s = document.createElement("span");
+  s.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12a4 4 0 0 1 4 4v1a4 4 0 0 1-7 2.6L14 15h-4l-1 .6A4 4 0 0 1 2 13v-1a4 4 0 0 1 4-4z"/><path d="M7 11v3M5.5 12.5h3M16 12h.01M18 13.5h.01"/></svg>';
+  return s.firstChild;
+}
+function gamesScreen() {
+  const card = (cls, title, sub, text, onclick) => h("button", { class: "gcard " + cls, onclick }, h("div", { class: "gpic" }), h("div", { class: "gtx" }, h("small", {}, sub), h("b", {}, title), h("p", {}, typeof text === "function" ? text() : text)));
+  const dark = () => document.documentElement.dataset.theme === "dark";
+  return h("div", { class: "screen" },
+    h("div", { class: "bar" }, h("button", { class: "round", "aria-label": "Indietro", onclick: () => history.back() }, backIcon()), h("h1", {}, "Giochi", h("small", {}, "per le pause dallo studio"))),
+    h("div", { class: "scroll" }, h("div", { class: "wrapc gwrap" },
+      card("glab", "La mucca di Schrödinger", "laboratorio",
+        () => dark() ? "Nel tema scuro la mucca fluttua nello spazio: lanciala e la gravità delle galassie la attira." : "Fionda a raggi gamma, scatola di Schrödinger e scanner a raggi X. Trascina la mucca su un altro orbitale.",
+        () => go(labScreen)),
+      card("gnight", "Nightmare before the exam", "minigioco", "La notte prima dell'esame i concetti che fanno paura attaccano. Difendi la mucca, raccogli gli aiuti, entra in classifica.",
+        () => window.MX_GAME_OPEN && window.MX_GAME_OPEN()))));
+}
+function labScreen() {
+  return h("div", { class: "screen lab" },
+    h("div", { class: "bar" }, h("button", { class: "round", "aria-label": "Indietro", onclick: () => history.back() }, backIcon()),
+      h("h1", {}, "Laboratorio", h("small", {}, "la mucca di Schrödinger")), themeButton()),
+    h("div", { class: "labhint" }, document.documentElement.dataset.theme === "dark" ? "Prendi la mucca e lanciala" : "Strumenti in basso a destra · ? per la guida"));
+}
