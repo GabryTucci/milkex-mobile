@@ -638,3 +638,24 @@ async function start() {
 // giochi della mucca: solo nell'elenco dei progetti (non mentre si legge un PDF)
 window.MX_PLAYGROUND = () => !!(current && current.querySelector(".search"));
 window.MX_GH_TOKEN = () => token();
+
+// ---------- nuova versione dell'app: si aggiorna con un tocco, il collegamento resta salvato
+async function checkAppUpdate() {
+  try {
+    const cur = ((document.querySelector('script[src*="app.js"]') || {}).src || "").match(/[?&]v=([\w.]+)/)?.[1];
+    if (!cur) return;
+    const v = (await (await fetch("version.txt?t=" + Date.now(), { cache: "no-store" })).text()).trim();
+    if (!v || v === cur || document.getElementById("appupd")) return;
+    const bar = document.createElement("div"); bar.id = "appupd";
+    bar.innerHTML = `<span>È pronta MILKeX Mobile <b>${v}</b></span><button>Aggiorna ora</button>`;
+    bar.querySelector("button").onclick = async () => {
+      bar.querySelector("button").textContent = "Aggiorno…";
+      try { for (const k of await caches.keys()) await caches.delete(k); } catch { }
+      try { const r = await navigator.serviceWorker?.getRegistration(); await r?.update(); } catch { }
+      location.replace(location.pathname + "?v=" + v + location.hash);
+    };
+    document.body.append(bar);
+  } catch { }
+}
+setTimeout(checkAppUpdate, 2500);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) checkAppUpdate(); });

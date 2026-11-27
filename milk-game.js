@@ -69,7 +69,7 @@
   document.body.append(box);
   const cv = box.querySelector("canvas"), ctx = cv.getContext("2d"), over = box.querySelector("#gO");
   let W = 0, H = 0, D = 1;
-  const size = () => { D = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = W * D; cv.height = H * D; };
+  const size = () => { D = Math.min(innerWidth < 700 ? 1.5 : 2, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = W * D; cv.height = H * D; };
   addEventListener("resize", () => { if (!box.hidden) size(); });
 
   // ---------- alieni: concetti di fisica e matematica che fanno paura ----------
@@ -134,11 +134,13 @@
     else G.shots.push({ x: G.ship.x, y: H - 86, vx: 0 });
     G.cool = fx.rule ? 110 : 260;
   }
+  const LABELS = {};
   function drawAlien(a, t) {
     const [name, col, draw] = a.k, k = t * .003 + a.ph;
     a.col = col; a.name = name;
     ctx.save(); ctx.translate(a.x, a.y + Math.sin(k) * 1.5); ctx.scale(1.35, 1.35);
-    ctx.shadowColor = col; ctx.shadowBlur = 8; ctx.fillStyle = col; ctx.strokeStyle = col; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (W >= 700 && G.aliens.length < 30) { ctx.shadowColor = col; ctx.shadowBlur = 8; }
+    ctx.fillStyle = col; ctx.strokeStyle = col; ctx.lineCap = "round"; ctx.lineJoin = "round";
     draw(ctx, k);
     ctx.shadowBlur = 0;
     // gli occhi cattivi, che seguono la mucca
@@ -149,8 +151,14 @@
     }
     ctx.strokeStyle = "#1d1726"; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-9, -8); ctx.lineTo(-3, -6); ctx.moveTo(9, -8); ctx.lineTo(3, -6); ctx.stroke();
     ctx.restore();
-    ctx.fillStyle = "rgba(239,234,248,.75)"; ctx.font = "italic 12px 'Latin Modern',serif"; ctx.textAlign = "center";
-    ctx.fillText(name, a.x, a.y + 36);
+    // il nome è disegnato una volta sola e poi copiato
+    let lab = LABELS[name];
+    if (!lab) {
+      lab = LABELS[name] = document.createElement("canvas"); const g = lab.getContext("2d"); g.font = "italic 24px 'Latin Modern',serif";
+      lab.width = Math.ceil(g.measureText(name).width) + 8; lab.height = 32;
+      g.font = "italic 24px 'Latin Modern',serif"; g.fillStyle = "rgba(239,234,248,.75)"; g.textAlign = "center"; g.fillText(name, lab.width / 2, 24);
+    }
+    ctx.drawImage(lab, a.x - lab.width / 4, a.y + 24, lab.width / 2, lab.height / 2);
   }
   function drawShip(t) {   // la mucca astronauta dentro la sua navicella
     const x = G.ship.x, y = H - 60;

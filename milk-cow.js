@@ -646,7 +646,7 @@ ${open ? '<path d="M8 30l18-10h46l-18 10z" fill="#3a2c22"/><path d="M8 30L1 15h4
   // presa e lancio: si trascina la mucca e la si lascia con una velocità
   addEventListener("pointerdown", e => {
     if (light() || off() || !AST.init || document.querySelector(".mxgame:not([hidden])")) return;
-    if (Math.hypot(e.clientX - AST.x, e.clientY - AST.y) > 46) return;
+    if (Math.hypot(e.clientX - AST.x, e.clientY - AST.y) > (e.pointerType === "touch" ? 60 : 46)) return;
     e.preventDefault(); e.stopPropagation();
     AST.drag = { hist: [[e.clientX, e.clientY, performance.now()]] };
     const move = ev => { AST.x = ev.clientX; AST.y = ev.clientY; AST.drag.hist.push([ev.clientX, ev.clientY, performance.now()]); if (AST.drag.hist.length > 6) AST.drag.hist.shift(); };
@@ -670,7 +670,7 @@ ${open ? '<path d="M8 30l18-10h46l-18 10z" fill="#3a2c22"/><path d="M8 30L1 15h4
     const c = window.MILK_COW;
     if (!light() || off() || !c || cow.jump || BOX.state !== "out" || BOX.anim || SLING) return;
     if (e.target.closest && e.target.closest(".cowdock,.slingbig,.cowhelp,button,a,input")) return;
-    if (Math.hypot(e.clientX - c.x, e.clientY - (c.y - 22)) > 34) return;
+    if (Math.hypot(e.clientX - c.x, e.clientY - (c.y - 22)) > (e.pointerType === "touch" ? 50 : 34)) return;
     e.preventDefault(); e.stopPropagation();
     DRAG = { x: e.clientX, y: e.clientY, home: { roof: cow.roof, x: cow.x } };
     const move = ev => { DRAG.x = ev.clientX; DRAG.y = ev.clientY; };
@@ -704,6 +704,15 @@ ${open ? '<path d="M8 30l18-10h46l-18 10z" fill="#3a2c22"/><path d="M8 30L1 15h4
     if (near !== !!document.documentElement.dataset.cowgrab) { if (near) document.documentElement.dataset.cowgrab = 1; else delete document.documentElement.dataset.cowgrab; }
   }, { passive: true });
 
+  // sul telefono: un dito appoggiato sulla mucca non fa scorrere la pagina
+  addEventListener("touchstart", e => {
+    if (off() || e.touches.length !== 1) return;
+    const x = e.touches[0].clientX, y = e.touches[0].clientY, c = window.MILK_COW;
+    const near = light() ? c && Math.hypot(x - c.x, y - (c.y - 22)) < 50 : AST.init && Math.hypot(x - AST.x, y - AST.y) < 60;
+    if (near) e.preventDefault();
+  }, { capture: true, passive: false });
+  addEventListener("touchmove", e => { if (DRAG || AST.drag) e.preventDefault(); }, { capture: true, passive: false });
+
   // ================== guida degli strumenti (tema chiaro) ==================
   const tHelp = document.createElement("div"); tHelp.className = "cowtool cowq"; tHelp.title = "Cosa fanno questi strumenti";
   tHelp.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="#7a4fd0" stroke-width="1.8"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1.9-1.1 1.8M12 16.6v.2" fill="none" stroke="#7a4fd0" stroke-width="1.8" stroke-linecap="round"/></svg>';
@@ -718,7 +727,7 @@ ${open ? '<path d="M8 30l18-10h46l-18 10z" fill="#3a2c22"/><path d="M8 30L1 15h4
       <div><div class="hkick">MILKeX · laboratorio</div><h3>La mucca di Schrödinger</h3><p class="hs">Quattro esperimenti di meccanica quantistica da fare tra un capitolo e l'altro.</p></div>
       <button class="hx" aria-label="Chiudi">×</button></div>
     <div class="hgrid">
-    ${row(COWPIC, "La mucca", "Cammina sui progetti e si riposa sugli orbitali. <b>Prendila e trascinala</b> su un altro orbitale: la porti in uno stato eccitato, lei torna da sola allo stato di partenza ed <b>emette un fotone</b>.", "E₂ → E₁ + ħω", "#7a4fd0")}
+    ${row('<canvas class="hcow" width="320" height="240"></canvas>', "La mucca", "Cammina sui progetti e si riposa sugli orbitali. <b>Prendila e trascinala</b> su un altro orbitale: la porti in uno stato eccitato, lei torna da sola allo stato di partenza ed <b>emette un fotone</b>.", "E₂ → E₁ + ħω", "#7a4fd0")}
     ${row(BIG_SLING_SVG, "Fionda a raggi gamma", "Clic sull'icona: compare la fionda in basso al centro. <b>Tendi l'elastico</b>, mira alla mucca e lascia. Colpita, salta eccitata su un altro orbitale, torna indietro ed emette un fotone.", "E = hν", "#3fb87a")}
     ${row(boxSvg(true), "Scatola di Schrödinger", "<b>Trascinala sulla mucca</b> per chiuderla dentro: così non disturba mentre studi. Un clic sulla scatola la apre e la mucca esce.", "|ψ⟩ = α|viva⟩ + β|morta⟩", "#b98048")}
     ${row(scanSvg, "Scanner a raggi X", "Compare quando la mucca è nella scatola. <b>Passalo sopra</b>: vedi dentro solo la parte che copri. Ogni passaggio è una nuova misura: viva o morta, 50% e 50%.", "|α|² = |β|² = ½", "#47c6d6")}
@@ -748,7 +757,7 @@ html[data-cowgrab]{cursor:grab}
 .cowhelp .hr::before{content:"";position:absolute;left:0;top:0;right:0;height:3px;background:var(--hc)}
 .cowhelp .hi{height:92px;display:grid;place-items:center;border-radius:14px;background:var(--milk);
   background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:14px 14px}
-.cowhelp .hi svg{width:86px;height:78px}
+.cowhelp .hi svg,.cowhelp .hi canvas{width:86px;height:78px}.cowhelp .hi canvas.hcow{width:104px;height:78px}
 .cowhelp .ht{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
 .cowhelp .ht b{font-family:var(--font-tex);font-weight:400;font-size:19px;color:var(--ink)}
 .cowhelp .heq{font-family:var(--font-tex);font-style:italic;font-size:13px;color:var(--hc);background:var(--milk);border:1px solid var(--line);padding:1px 8px;border-radius:999px}
@@ -757,7 +766,13 @@ html[data-cowgrab]{cursor:grab}
 .cowhelp .hx{position:absolute;right:16px;top:16px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line-2);background:var(--milk);font-size:20px;cursor:pointer;color:var(--ink-2)}
 @media (max-width:640px){.cowhelp .hgrid{grid-template-columns:1fr}.cowhelp .hhead{padding:20px 18px 16px;gap:12px}.cowhelp .hatom{width:58px;height:58px}.cowhelp h3{font-size:25px}.cowhelp .hi{height:76px}}`;
   document.head.append(css3);
-  tHelp.addEventListener("click", () => { helpBox.hidden = false; });
+  tHelp.addEventListener("click", () => {
+    helpBox.hidden = false;
+    const c = helpBox.querySelector(".hcow"), keep = ctx; ctx = c.getContext("2d");
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, 320, 240); ctx.translate(140, 222); ctx.scale(4.4, 4.4);
+    drawCow(performance.now(), { p: 0, walk: 0, crouch: 0, lie: 0, graze: 0, chew: 0, closed: 0, moo: 0 }, cow.dead);
+    ctx = keep;
+  });
   helpBox.addEventListener("click", e => { if (e.target === helpBox || e.target.closest(".hx")) helpBox.hidden = true; });
   if (BOX.state === "closing") BOX.state = "boxed";
   paintTools();
